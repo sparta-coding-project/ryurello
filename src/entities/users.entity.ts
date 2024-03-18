@@ -26,8 +26,8 @@ export class User {
   @Column({ type: 'varchar', unique: true, nullable: false })
   nick_name: string;
 
-  @OneToMany(() => BoardUser, (boardUser) => boardUser.user)
-  boardUser: BoardUser;
+  //   @OneToMany(() => BoardUser, (boardUser) => boardUser.user)
+  //   boardUser: BoardUser;
 
   @CreateDateColumn()
   createdAt: Date;
