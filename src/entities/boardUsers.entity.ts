@@ -9,6 +9,7 @@ import { Role } from './types/boardUserRole.type';
 import { User } from './users.entity';
 import { Board } from './boards.entity';
 import { Comment } from './comments.entity';
+import { CardUser } from './cardUsers.entity';
 
 @Entity({
   name: 'boardUsers',
@@ -32,4 +33,7 @@ export class BoardUser {
 
   @OneToMany(() => Comment, (comment) => comment.boardUser)
   comments: Comment[];
+
+  @OneToMany(() => CardUser, cardUser => cardUser.boardUser)
+  cardUsers: CardUser[]
 }
