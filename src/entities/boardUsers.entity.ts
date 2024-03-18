@@ -9,6 +9,7 @@ import { Role } from './types/boardUserRole.type';
 import { User } from './users.entity';
 import { Board } from './boards.entity';
 import { Comment } from './comments.entity';
+import { CardUser } from './cardUsers.entity';
 
 @Entity({
   name: 'boardUsers',
@@ -25,11 +26,14 @@ export class BoardUser {
   })
   user: User;
 
-  @ManyToOne((type): typeof Board => Board, (board) => board.boardUser, {
+  @ManyToOne((type): typeof Board => Board, (board) => board.boardUsers, {
     onDelete: 'CASCADE',
   })
   board: Board;
 
   @OneToMany(() => Comment, (comment) => comment.boardUser)
   comments: Comment[];
+
+  @OneToMany(() => CardUser, (cardUser) => cardUser.boardUser)
+  cardUsers: CardUser[];
 }

@@ -27,7 +27,7 @@ export class User {
   nickName: string;
 
   @OneToMany(() => BoardUser, (boardUser) => boardUser.user)
-  boardUsers: BoardUser;
+  boardUsers: BoardUser[];
 
   @CreateDateColumn()
   createdAt: Date;
