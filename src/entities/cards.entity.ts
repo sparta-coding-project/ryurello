@@ -12,12 +12,8 @@ import {
 import { Catalog } from './catalogs.entity';
 import { Tag } from './tags.entity';
 import { CardUser } from './cardUsers.entity';
-
-export enum CardStatus {
-  UPCOMING = 'upcoming',
-  INPROGRESS = 'inprogress',
-  DONE = 'done',
-}
+import { Comment } from './comments.entity';
+import { CardStatus } from './types/cardStatus.type';
 
 @Entity()
 export class Card {
@@ -59,7 +55,9 @@ export class Card {
   @JoinColumn({ name: 'tagId', referencedColumnName: 'tagId' })
   tags: Tag[];
 
+  @OneToMany(() => CardUser, (cardUser) => cardUser.card)
+  cardUsers: CardUser[];
 
-  @OneToMany(()=> CardUser, cardUser => cardUser.card)
-  cardUsers: CardUser[]
+  @OneToMany(() => Comment, (comment) => comment.card)
+  comments: Comment[];
 }
