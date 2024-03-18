@@ -24,7 +24,7 @@ export class Catalog {
   @ManyToOne(() => Board, (board) => board.catalogs, {
     onDelete: 'CASCADE',
   })
-  boards: Board;
+  board: Board;
 
   @OneToMany(() => Card, (card) => card.catalog)
   cards: Card[];
