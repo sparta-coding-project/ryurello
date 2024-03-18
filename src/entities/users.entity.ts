@@ -24,10 +24,10 @@ export class User {
   password: string;
 
   @Column({ type: 'varchar', unique: true, nullable: false })
-  nick_name: string;
+  nickName: string;
 
-  //   @OneToMany(() => BoardUser, (boardUser) => boardUser.user)
-  //   boardUser: BoardUser;
+  @OneToMany(() => BoardUser, (boardUser) => boardUser.user)
+  boardUsers: BoardUser;
 
   @CreateDateColumn()
   createdAt: Date;

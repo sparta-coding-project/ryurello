@@ -25,7 +25,7 @@ export class BoardUser {
   })
   user: User;
 
-  @ManyToOne((type): typeof Board => Board, (board) => board.boardUsers, {
+  @ManyToOne((type): typeof Board => Board, (board) => board.boardUser, {
     onDelete: 'CASCADE',
   })
   board: Board;
