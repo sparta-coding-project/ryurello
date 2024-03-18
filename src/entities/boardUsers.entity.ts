@@ -34,6 +34,6 @@ export class BoardUser {
   @OneToMany(() => Comment, (comment) => comment.boardUser)
   comments: Comment[];
 
-  @OneToMany(() => CardUser, cardUser => cardUser.boardUser)
-  cardUsers: CardUser[]
+  @OneToMany(() => CardUser, (cardUser) => cardUser.boardUser)
+  cardUsers: CardUser[];
 }
