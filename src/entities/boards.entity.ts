@@ -22,5 +22,5 @@ export class Board {
   catalogs: Catalog[];
 
   @OneToMany(() => BoardUser, (boardUser) => boardUser.board)
-  boardUsers: BoardUser;
+  boardUsers: BoardUser[];
 }
