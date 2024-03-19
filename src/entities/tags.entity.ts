@@ -7,7 +7,7 @@ export class Tag {
   tagId: number
 
   @ManyToOne(() => Card, card => card.tags)
-  @JoinColumn({name: "cardId", referencedColumnName: "cardId"})
+  @JoinColumn({name: "card_id", referencedColumnName: "cardId"})
   card: Card
 
   @Column()

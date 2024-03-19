@@ -8,10 +8,10 @@ export class CardUser {
   cuId: number
 
   @ManyToOne(() => BoardUser, (boardUser) => boardUser.cardUsers)
-  @JoinColumn({ name: 'buId', referencedColumnName: 'buId' })
+  @JoinColumn({ name: 'bu_id', referencedColumnName: 'buId' })
   boardUser: BoardUser;
 
   @ManyToOne(() => Card, (card) => card.cardUsers)
-  @JoinColumn({ name: 'cardId', referencedColumnName: 'cardId' })
+  @JoinColumn({ name: 'card_id', referencedColumnName: 'cardId' })
   card: Card;
 }

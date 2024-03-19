@@ -13,15 +13,17 @@ import { Catalog } from './catalogs.entity';
 import { Tag } from './tags.entity';
 import { CardUser } from './cardUsers.entity';
 import { Comment } from './comments.entity';
-import { CardStatus } from './types/cardStatus.type';
 
 @Entity()
 export class Card {
   @PrimaryGeneratedColumn()
   cardId: number;
 
+  @Column()
+  catalogId: number
+
   @ManyToOne(() => Catalog, (catalog) => catalog.cards)
-  @JoinColumn({ name: 'catalogId', referencedColumnName: 'catalogId' })
+  @JoinColumn({ name: 'catalog_id', referencedColumnName: 'catalogId' })
   catalog: Catalog;
 
   @Column({ type: 'varchar' })
@@ -34,10 +36,7 @@ export class Card {
   bgColor: string;
 
   @Column()
-  sequence: string;
-
-  @Column()
-  status: CardStatus;
+  sequence: number;
 
   @Column()
   startDate: Date;
@@ -52,7 +51,6 @@ export class Card {
   updatedAt: Date;
 
   @OneToMany(() => Tag, (tag) => tag.card)
-  @JoinColumn({ name: 'tagId', referencedColumnName: 'tagId' })
   tags: Tag[];
 
   @OneToMany(() => CardUser, (cardUser) => cardUser.card)

@@ -15,7 +15,7 @@ import { BoardUser } from './boardUsers.entity';
 })
 export class User {
   @PrimaryGeneratedColumn()
-  user_id: number;
+  userId: number;
 
   @Column({ type: 'varchar', unique: true, nullable: false })
   email: string;
@@ -24,7 +24,7 @@ export class User {
   password: string;
 
   @Column({ type: 'varchar', unique: true, nullable: false })
-  nick_name: string;
+  nickname: string;
 
   @OneToMany(() => BoardUser, (boardUser) => boardUser.user)
   boardUsers: BoardUser[];
