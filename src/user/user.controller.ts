@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Res,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SignUpDto } from './dto/signUp.dto';
@@ -59,7 +61,7 @@ export class UserController {
     return { user };
   }
   /**
-   * 유저 업데이트
+   * 유저정보 수정
    * @param id
    * @param updateUserDto
    * @returns
@@ -72,12 +74,22 @@ export class UserController {
   /**
    * 유저 삭제
    * @param id
-   * @param password
    * @returns
    */
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
-  remove(@Param('id') id: string, @Body('password') password: string) {
-    return this.userService.delete(+id, password);
+  async remove(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const userId = req.user.userId;
+
+    if (+id !== userId) {
+      throw new UnauthorizedException('해당 작업을 수행할 권한이 없습니다.');
+    }
+    const deleteUser = await this.userService.delete(+id);
+    res.clearCookie('Authorization');
+    return deleteUser;
   }
 }
