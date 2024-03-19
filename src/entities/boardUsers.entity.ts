@@ -13,7 +13,7 @@ import { Comment } from './comments.entity';
 import { CardUser } from './cardUsers.entity';
 
 @Entity({
-  name: 'boardUsers',
+  name: 'boardusers',
 })
 export class BoardUser {
   @PrimaryGeneratedColumn()

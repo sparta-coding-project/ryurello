@@ -4,7 +4,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { BoardModule } from './board/board.module';
+import { UserModule } from './user/user.module';
+import { MailModule } from './mail/mail.module';
 import Joi from 'joi';
+import { AuthModule } from './auth/auth.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -41,6 +44,9 @@ const typeOrmModuleOptions = {
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     BoardModule,
+    UserModule,
+    MailModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
