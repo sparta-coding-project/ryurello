@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Catalog } from 'src/entities/catalogs.entity';
+import _ from 'lodash';
 
 @Injectable()
 export class CatalogService {
@@ -10,6 +11,7 @@ export class CatalogService {
     private catalogRepository: Repository<Catalog>,
   ) {}
 
+  /* catalog 생성 */
   async createCatalog(title: string, sequence: number, boardId: number) {
     await this.catalogRepository.save({
       title,
@@ -20,7 +22,51 @@ export class CatalogService {
     return { message: `${boardId}의 ${title} category가 생성되었습니다.` };
   }
 
+  /* catalog 단일 조회 */
   async getOneCatalog(catalogId: number) {
-    return await this.catalogRepository.findBy({ catalogId: catalogId });
+    return await this.catalogRepository.findOneBy({ catalogId: catalogId });
+  }
+
+  /* catalog 제목 수정 */
+  async updateCatalogTitle(catalogId: number, title: string) {
+    const catalog = await this.catalogRepository.findOneBy({
+      catalogId: catalogId,
+    });
+
+    if (_.isNil(catalog)) {
+      throw new NotFoundException('해당 catalog를 찾을 수 없습니다.');
+    }
+
+    await this.catalogRepository.update({ catalogId }, { title });
+  }
+
+  /* catalog 순서 변경 */
+  async updateCatalogSequence(catalogId: number, sequence: number) {
+    const catalog = await this.catalogRepository.findOneBy({
+      catalogId: catalogId,
+    });
+
+    if (_.isNil(catalog)) {
+      throw new NotFoundException('해당 catalog를 찾을 수 없습니다.');
+    }
+
+    const board = catalog.board;
+    const catalogs = await this.catalogRepository.findBy({ board });
+    return catalogs;
+  }
+
+  /* catalog 삭제 */
+  async deleteCatalog(catalogId: number) {
+    const catalog = await this.catalogRepository.findOneBy({
+      catalogId: catalogId,
+    });
+
+    if (_.isNil(catalog)) {
+      throw new NotFoundException('해당 catalog를 찾을 수 없습니다.');
+    }
+
+    await this.catalogRepository.delete({ catalogId });
+
+    return { message: '해당 catalog가 삭제되었습니다.' };
   }
 }

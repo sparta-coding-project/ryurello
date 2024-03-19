@@ -34,17 +34,27 @@ export class CatalogController {
     );
   }
 
-  @Patch('update/:boardId/:catalogId')
-  async updateCatalog(
-    @Param('boardId,catalogId') boardId: number,
+  @Patch('updateTitle/:catalogId')
+  async updateCatalogTitle(
+    @Param('catalogId')
     catalogId: number,
     @Body() updateCatalogDto: UpdateCatalogDto,
   ) {
-    return this.catalogService.updateCatalog(
+    return this.catalogService.updateCatalogTitle(
       catalogId,
       updateCatalogDto.title,
+    );
+  }
+
+  @Patch('updateSequence/:catalogId')
+  async updateCatalogSequence(
+    @Param('catalogId')
+    catalogId: number,
+    @Body() updateCatalogDto: UpdateCatalogDto,
+  ) {
+    return this.catalogService.updateCatalogSequence(
+      catalogId,
       updateCatalogDto.sequence,
-      boardId,
     );
   }
 
