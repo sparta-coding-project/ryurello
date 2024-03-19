@@ -22,7 +22,7 @@ export class CatalogService {
 
   /* catalog 전체 조회 */
   async getCatalogs(boardId: number) {
-    // return await this.catalogRepository.find(board, { relations: ['board'] });
+    return await this.catalogRepository.find(board, { relations: ['board'] });
   }
 
   /* catalog 단일 조회 */
