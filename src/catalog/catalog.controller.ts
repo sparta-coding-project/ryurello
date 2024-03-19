@@ -17,32 +17,38 @@ import { ApiTags } from '@nestjs/swagger';
 export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
 
-  @Get()
-  async findAll() {
-    return await this.catalogService.getAll();
+  @Get('get/:catalogId')
+  async findOneCatalog(@Param('categoryId') categoryId: number) {
+    return await this.catalogService.getOneCatalog(categoryId);
   }
 
-  @Post()
-  async createCatalog(@Body() catalogDto: CatalogDto) {
-    await this.catalogService.createCatalog(
+  @Post('create/:boardId')
+  async createCatalog(
+    @Param('boardId') boardId: number,
+    @Body() catalogDto: CatalogDto,
+  ) {
+    return this.catalogService.createCatalog(
       catalogDto.title,
       catalogDto.sequence,
+      boardId,
     );
   }
 
-  @Patch()
+  @Patch('update/:boardId/:catalogId')
   async updateCatalog(
-    @Param('catalogId') catalogId: number,
+    @Param('boardId,catalogId') boardId: number,
+    catalogId: number,
     @Body() updateCatalogDto: UpdateCatalogDto,
   ) {
-    await this.catalogService.updateCatalog(
+    return this.catalogService.updateCatalog(
       catalogId,
       updateCatalogDto.title,
       updateCatalogDto.sequence,
+      boardId,
     );
   }
 
-  @Delete()
+  @Delete('delete/:catalogId')
   async deleteCatalog(@Param('catalogId') catalogId: number) {
     return this.catalogService.deleteCatalog(catalogId);
   }
