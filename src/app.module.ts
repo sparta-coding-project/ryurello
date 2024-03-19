@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
-import { MailModule } from './mail/mail.module';
+import { MailModule } from './utils/mail/mail.module';
 import Joi from 'joi';
 import { AuthModule } from './auth/auth.module';
 
