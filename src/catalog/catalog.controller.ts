@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { CatalogDto } from './dto/catalog.dto';
-import { UpdateCatalogDto } from './dto/updateCatalog.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('catalog')
@@ -18,8 +17,11 @@ export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
 
   @Get('get/:catalogId')
-  async findOneCatalog(@Param('categoryId') categoryId: number) {
-    return await this.catalogService.getOneCatalog(categoryId);
+  async findOneCatalog(
+    @Param('catalogId')
+    catalogId: number,
+  ) {
+    return await this.catalogService.getOneCatalog(catalogId);
   }
 
   @Post('create/:boardId')
@@ -38,24 +40,19 @@ export class CatalogController {
   async updateCatalogTitle(
     @Param('catalogId')
     catalogId: number,
-    @Body() updateCatalogDto: UpdateCatalogDto,
+    @Body('updateTitle') updateTitle: string,
   ) {
-    return this.catalogService.updateCatalogTitle(
-      catalogId,
-      updateCatalogDto.title,
-    );
+    await this.catalogService.updateCatalogTitle(catalogId, updateTitle);
+    return { message: `'${updateTitle}'로 title이 변경되었습니다.` };
   }
 
   @Patch('updateSequence/:catalogId')
   async updateCatalogSequence(
     @Param('catalogId')
     catalogId: number,
-    @Body() updateCatalogDto: UpdateCatalogDto,
+    @Body('updateSequence') updateSequence: number,
   ) {
-    return this.catalogService.updateCatalogSequence(
-      catalogId,
-      updateCatalogDto.sequence,
-    );
+    return this.catalogService.updateCatalogSequence(catalogId, updateSequence);
   }
 
   @Delete('delete/:catalogId')
