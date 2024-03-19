@@ -14,12 +14,21 @@ export class Comment {
   @PrimaryGeneratedColumn()
   commentId: number;
 
+  /**
+   * @example "댓글 예시입니다."
+   */
   @Column({ type: 'varchar', unique: true, nullable: false })
   content: string;
 
+  /**
+   * @example 1
+   */
   @Column({ type: 'int', unique: true, nullable: false })
   sequence: string;
 
+  /**
+   * @example Clap
+   */
   @Column({ type: 'enum', enum: Like })
   like?: Like;
 

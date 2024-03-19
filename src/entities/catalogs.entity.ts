@@ -15,11 +15,17 @@ export class Catalog {
   @PrimaryGeneratedColumn()
   catalogId: number;
 
+  /**
+   *  @example "catalog 예시 - To Do"
+   */
   @Column({ type: 'varchar', unique: true, nullable: false })
   title: string;
 
+  /**
+   * @example 1
+   */
   @Column({ type: 'int', unique: true, nullable: false })
-  sequence: string;
+  sequence: number;
 
   @ManyToOne(() => Board, (board) => board.catalogs, {
     onDelete: 'CASCADE',

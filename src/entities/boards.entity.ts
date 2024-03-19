@@ -7,7 +7,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 })
 export class Board {
   @PrimaryGeneratedColumn()
-  id: number;
+  boardId: number;
 
   @Column({ type: 'varchar', nullable: false })
   title: string;

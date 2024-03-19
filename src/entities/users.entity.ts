@@ -15,7 +15,7 @@ import { BoardUser } from './boardUsers.entity';
 })
 export class User {
   @PrimaryGeneratedColumn()
-  user_id: number;
+  userId: number;
 
   @Column({ type: 'varchar', unique: true, nullable: false })
   email: string;
