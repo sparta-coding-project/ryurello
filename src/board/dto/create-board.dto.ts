@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 import { PickType } from '@nestjs/swagger';
 import { Board } from 'src/entities/boards.entity';
 
