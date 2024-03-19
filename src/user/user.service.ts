@@ -67,9 +67,8 @@ export class UserService {
   }
 
   async update(userId: number, updateUserDto: UpdateUserDto) {
-    const { password, updatePassword, nickName } = updateUserDto;
+    let { password, updatePassword, updateNickName } = updateUserDto;
     const user = await this.userRepository.findOne({
-      select: ['password'],
       where: { userId },
     });
     if (_.isNil(user)) {
@@ -79,25 +78,26 @@ export class UserService {
       throw new UnauthorizedException('비밀번호를 확인해 주세요');
     }
     const hashedPassword = await hash(updatePassword, 10);
+    if (!updateNickName) {
+      updateNickName = user.nickName;
+    }
 
-    const updateUser = this.userRepository.update(
+    const updateUser = await this.userRepository.update(
       { userId },
-      { password: hashedPassword, nickName: nickName },
+      { password: hashedPassword, nickName: updateNickName },
     );
 
-    return { data: updateUser };
+    const updatedUser = await this.userRepository.findOneBy({ userId });
+
+    return { updatedUser };
   }
 
-  async delete(userId: number, password: string) {
+  async delete(userId: number) {
     const user = await this.userRepository.findOne({
-      select: ['password'],
       where: { userId },
     });
     if (_.isNil(user)) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
-    }
-    if (!_.isNil(user.password) && !(await compare(password, user.password))) {
-      throw new UnauthorizedException('비밀번호를 확인해 주세요');
     }
 
     const deleteUser = await this.userRepository.delete({ userId });

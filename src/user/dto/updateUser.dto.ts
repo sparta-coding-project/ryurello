@@ -1,21 +1,26 @@
 import { PickType } from '@nestjs/swagger';
-import { IsString, IsStrongPassword } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+  Validate,
+} from 'class-validator';
 import { User } from 'src/entities/users.entity';
+import { IsStrongPasswordNullable } from '../validate/password.validate';
 
-export class UpdateUserDto extends PickType(User, [
-  'email',
-  'password',
-  'nickName',
-]) {
-  @IsStrongPassword(
-    {},
-    {
-      message:
-        '비밀 번호는 영문 소문자, 영문 대문자, 숫자, 특수기호를 포함해 8자 이상이어야 합니다.',
-    },
-  )
-  updatePassword: string;
-
+export class UpdateUserDto extends PickType(User, ['email', 'password']) {
+  /**
+   * 변경할 비밀번호
+   * @example "strinG!23"
+   */
+  @Validate(IsStrongPasswordNullable)
+  @IsOptional()
+  updatePassword: string | null;
+  /**
+   * 변경할 닉네임
+   * @example "젠데이야"
+   */
   @IsString()
-  updateNickName: string;
+  @IsOptional()
+  updateNickName: string | null;
 }
