@@ -4,6 +4,7 @@ import {
   OneToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  JoinColumn,
 } from 'typeorm';
 import { Card } from './cards.entity';
 import { Board } from './boards.entity';
@@ -30,6 +31,7 @@ export class Catalog {
   @ManyToOne(() => Board, (board) => board.catalogs, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'boardId', referencedColumnName: 'boardId' })
   board: Board;
 
   @OneToMany(() => Card, (card) => card.catalog)
