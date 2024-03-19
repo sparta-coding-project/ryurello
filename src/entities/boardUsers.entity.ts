@@ -9,16 +9,18 @@ import {
 import { Role } from './types/boardUserRole.type';
 import { User } from './users.entity';
 import { Board } from './boards.entity';
+import { Comment } from './comments.entity';
+import { CardUser } from './cardUsers.entity';
 
 @Entity({
-    name: 'boardUsers',
+  name: 'boardUsers',
 })
 export class BoardUser {
-    @PrimaryGeneratedColumn()
-    id: number;
-  
-    @Column({ type: 'enum', enum: Role, default: Role.User })
-    role: Role;
+  @PrimaryGeneratedColumn()
+  buId: number;
+
+  @Column({ type: 'enum', enum: Role, default: Role.User })
+  role: Role;
 
   @ManyToOne(() => User, (user) => user.boardUsers, {
     onDelete: 'CASCADE',
