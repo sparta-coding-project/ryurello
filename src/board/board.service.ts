@@ -4,23 +4,43 @@ import { Repository } from 'typeorm';
 import {
   Injectable,
   NotFoundException,
-  UnauthorizedException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateBoardDto } from './dto/create-board.dto';
 import { RemoveBoardDto } from './dto/remove-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { User } from 'src/entities/users.entity';
 import { Board } from 'src/entities/boards.entity';
+import { BoardUser } from 'src/entities/boardUsers.entity';
+import { Role } from 'src/entities/types/boardUserRole.type';
 
 @Injectable()
 export class BoardService {
   constructor(
     @InjectRepository(Board) private boardRepository: Repository<Board>,
+    @InjectRepository(BoardUser)
+    private boardUserRepository: Repository<BoardUser>,
+    @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async create(createBoardDto: CreateBoardDto) {
-    return (await this.boardRepository.save(createBoardDto)).boardId;
+  async create(createBoardDto: CreateBoardDto, userId: number) {
+    const board = await this.boardRepository.save(createBoardDto);
+
+    const user = await this.userRepository.findOne({ where: { userId } });
+    if (_.isNil(user)) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+
+    const boardUser = this.boardUserRepository.create({
+      board,
+      user,
+      role: Role.Admin,
+    });
+    await this.boardUserRepository.save(boardUser);
+
+    return board.boardId;
   }
 
   async findAll() {
