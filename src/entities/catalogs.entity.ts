@@ -31,7 +31,7 @@ export class Catalog {
   @ManyToOne(() => Board, (board) => board.catalogs, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'boardId', referencedColumnName: 'boardId' })
+  @JoinColumn({ name: 'board_id', referencedColumnName: 'boardId' })
   board: Board;
 
   @OneToMany(() => Card, (card) => card.catalog)

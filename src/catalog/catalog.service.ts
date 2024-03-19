@@ -19,6 +19,12 @@ export class CatalogService {
     });
     return { message: `${boardId}의 ${title} catalog가 생성되었습니다.` };
   }
+
+  /* catalog 전체 조회 */
+  async getCatalogs(boardId: number) {
+    // return await this.catalogRepository.find(board, { relations: ['board'] });
+  }
+
   /* catalog 단일 조회 */
   async getOneCatalog(catalogId: number) {
     return await this.catalogRepository.findOneBy({ catalogId: catalogId });
@@ -42,8 +48,15 @@ export class CatalogService {
       throw new NotFoundException('해당 catalog를 찾을 수 없습니다.');
     }
     const board = catalog.board;
-    let catalogs = await this.catalogRepository.findBy({ board });
+    const catalogs = await this.catalogRepository.findBy({ board });
+    console.log(catalogs);
     catalogs.splice(sequence - 1, 0, catalog);
+    const changedCatalogs = catalogs.map((c) => {
+      // if (c.sequence - 1 !== catalogs.indexOf(c)) {
+      //   await this.catalogRepository.update({c.catalogId},{})
+      // }
+      console.log(c);
+    });
   }
   /* catalog 삭제 */
   async deleteCatalog(catalogId: number) {

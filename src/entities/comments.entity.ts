@@ -33,10 +33,10 @@ export class Comment {
   like?: Like;
 
   @ManyToOne(() => Card, (card) => card.comments)
-  @JoinColumn({ name: 'cardId', referencedColumnName: 'cardId' })
+  @JoinColumn({ name: 'card_id', referencedColumnName: 'cardId' })
   card: Card;
 
   @ManyToOne(() => BoardUser, (boardUser) => boardUser.comments)
-  @JoinColumn({ name: 'buId', referencedColumnName: 'buId' })
+  @JoinColumn({ name: 'bu_id', referencedColumnName: 'buId' })
   boardUser: BoardUser;
 }
