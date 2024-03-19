@@ -5,7 +5,7 @@ import { Card } from './cards.entity';
 @Entity()
 export class CardUser {
   @PrimaryGeneratedColumn()
-  cuId: number
+  cuId: number;
 
   @ManyToOne(() => BoardUser, (boardUser) => boardUser.cardUsers)
   @JoinColumn({ name: 'bu_id', referencedColumnName: 'buId' })

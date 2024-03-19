@@ -8,6 +8,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { BoardUser } from './boardUsers.entity';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 
 @Index('email', ['email'], { unique: true })
 @Entity({
@@ -16,15 +22,38 @@ import { BoardUser } from './boardUsers.entity';
 export class User {
   @PrimaryGeneratedColumn()
   userId: number;
-
+  /**
+   * 이메일
+   * @example "sparta@sparta.com"
+   */
+  @IsNotEmpty({ message: '이메일을 입력해 주세요.' })
+  @IsEmail()
   @Column({ type: 'varchar', unique: true, nullable: false })
   email: string;
 
+  /**
+   * 비밀번호
+   * @example "strinG!2"
+   */
+  @IsStrongPassword(
+    {},
+    {
+      message:
+        '비밀 번호는 영문 소문자, 영문 대문자, 숫자, 특수기호를 포함해 8자 이상이어야 합니다.',
+    },
+  )
+  @IsNotEmpty({ message: '비밀번호를 입력해주세요.' })
   @Column({ type: 'varchar', select: false, nullable: false })
   password: string;
 
+  /**
+   * 닉네임
+   * @example "티모시 샬라메"
+   */
+  @IsString()
+  @IsNotEmpty({ message: '닉네임을 입력해 주세요.' })
   @Column({ type: 'varchar', unique: true, nullable: false })
-  nickname: string;
+  nickName: string;
 
   @OneToMany(() => BoardUser, (boardUser) => boardUser.user)
   boardUsers: BoardUser[];

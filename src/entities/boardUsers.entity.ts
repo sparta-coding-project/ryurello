@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -12,7 +13,7 @@ import { Comment } from './comments.entity';
 import { CardUser } from './cardUsers.entity';
 
 @Entity({
-  name: 'boardUsers',
+  name: 'boardusers',
 })
 export class BoardUser {
   @PrimaryGeneratedColumn()
@@ -21,19 +22,21 @@ export class BoardUser {
   @Column({ type: 'enum', enum: Role, default: Role.User })
   role: Role;
 
-  @ManyToOne((type): typeof User => User, (user) => user.boardUsers, {
+  @ManyToOne(() => User, (user) => user.boardUsers, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'userId' })
   user: User;
 
-  @ManyToOne((type): typeof Board => Board, (board) => board.boardUsers, {
+  @ManyToOne(() => Board, (board) => board.boardUsers, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'board_id', referencedColumnName: 'boardId' })
   board: Board;
 
   @OneToMany(() => Comment, (comment) => comment.boardUser)
   comments: Comment[];
 
-  @OneToMany(() => CardUser, cardUser => cardUser.boardUser)
-  cardUsers: CardUser[]
+  @OneToMany(() => CardUser, (cardUser) => cardUser.boardUser)
+  cardUsers: CardUser[];
 }
