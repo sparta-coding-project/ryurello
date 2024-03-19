@@ -3,7 +3,10 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
+import { MailModule } from './mail/mail.module';
 import Joi from 'joi';
+import { AuthModule } from './auth/auth.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -35,10 +38,13 @@ const typeOrmModuleOptions = {
         DB_PORT: Joi.number().required(),
         DB_NAME: Joi.string().required(),
         DB_SYNC: Joi.boolean().required(),
-        DB_LOG: Joi.boolean().required()
+        DB_LOG: Joi.boolean().required(),
       }),
     }),
-    TypeOrmModule.forRootAsync(typeOrmModuleOptions)
+    TypeOrmModule.forRootAsync(typeOrmModuleOptions),
+    UserModule,
+    MailModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
