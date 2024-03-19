@@ -14,20 +14,29 @@ export class Comment {
   @PrimaryGeneratedColumn()
   commentId: number;
 
+  /**
+   * @example "댓글 예시입니다."
+   */
   @Column({ type: 'varchar', unique: true, nullable: false })
   content: string;
 
+  /**
+   * @example 1
+   */
   @Column({ type: 'int', unique: true, nullable: false })
   sequence: string;
 
+  /**
+   * @example Clap
+   */
   @Column({ type: 'enum', enum: Like })
   like?: Like;
 
   @ManyToOne(() => Card, (card) => card.comments)
-  @JoinColumn({ name: 'cardId', referencedColumnName: 'cardId' })
+  @JoinColumn({ name: 'card_id', referencedColumnName: 'cardId' })
   card: Card;
 
   @ManyToOne(() => BoardUser, (boardUser) => boardUser.comments)
-  @JoinColumn({ name: 'buId', referencedColumnName: 'buId' })
+  @JoinColumn({ name: 'bu_id', referencedColumnName: 'buId' })
   boardUser: BoardUser;
 }
