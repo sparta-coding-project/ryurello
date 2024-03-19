@@ -6,11 +6,11 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
     name: 'boards',
 })
 export class Board {
-    @PrimaryGeneratedColumn()
-    id: number;
-  
-    @Column({ type: 'varchar', nullable: false })
-    title: string;
+  @PrimaryGeneratedColumn()
+  boardId: number;
+
+  @Column({ type: 'varchar', nullable: false })
+  title: string;
 
     @Column({ type: 'varchar', nullable: false })
     background_color: string;

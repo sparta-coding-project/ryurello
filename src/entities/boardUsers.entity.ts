@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Role } from './types/boardUserRole.type';
 import { User } from './users.entity';
 import { Board } from './boards.entity';
@@ -13,9 +20,21 @@ export class BoardUser {
     @Column({ type: 'enum', enum: Role, default: Role.User })
     role: Role;
 
-    @ManyToOne((type): typeof User => User, user => user.boardUsers, {onDelete: 'CASCADE'})
-    user: User;
+  @ManyToOne(() => User, (user) => user.boardUsers, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'userId' })
+  user: User;
 
-    @ManyToOne((type): typeof Board => Board, board => board.boardUsers, {onDelete: 'CASCADE'})
-    board: Board;
+  @ManyToOne(() => Board, (board) => board.boardUsers, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'board_id', referencedColumnName: 'boardId' })
+  board: Board;
+
+  @OneToMany(() => Comment, (comment) => comment.boardUser)
+  comments: Comment[];
+
+  @OneToMany(() => CardUser, (cardUser) => cardUser.boardUser)
+  cardUsers: CardUser[];
 }
