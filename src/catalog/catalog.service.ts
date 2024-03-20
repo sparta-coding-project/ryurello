@@ -2,22 +2,32 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Catalog } from 'src/entities/catalogs.entity';
+import { Board } from 'src/entities/boards.entity';
+
 import _ from 'lodash';
 
 @Injectable()
 export class CatalogService {
   constructor(
+    @InjectRepository(Board) private boardRepository: Repository<Board>,
     @InjectRepository(Catalog)
     private catalogRepository: Repository<Catalog>,
   ) {}
+
   /* catalog 생성 */
   async createCatalog(title: string, sequence: number, boardId: number) {
+    const board = await this.boardRepository.findOneBy({ boardId });
+
+    if (_.isNil(board)) {
+      throw new NotFoundException('board를 찾을 수 없습니다.');
+    }
+
     await this.catalogRepository.save({
-      board_id: boardId,
+      board,
       title,
       sequence,
     });
-    console.log(boardId, sequence);
+
     return { message: `${boardId}의 ${title} catalog가 생성되었습니다.` };
   }
 

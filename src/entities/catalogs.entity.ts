@@ -13,6 +13,7 @@ import { Board } from './boards.entity';
 @Entity({
   name: 'catalogs',
 })
+@Unique(['board', 'sequence'])
 export class Catalog {
   @PrimaryGeneratedColumn()
   catalogId: number;
