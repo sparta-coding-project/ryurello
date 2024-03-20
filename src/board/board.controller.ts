@@ -18,8 +18,9 @@ import { MailService } from 'src/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { MailDto } from './dto/mail.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/entities/types/boardUserRole.type';
 import { BoardMemberGuard } from 'src/auth/boardusers.guard';
@@ -104,32 +105,19 @@ export class BoardController {
 
   /**
    * 보드 초대
+   * @param to
    * @param boardId
    * @returns
    */
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        to: {
-          type: 'string',
-          example: ['user1@example.com', 'user2@example.com'],
-        },
-      },
-    },
-  })
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), BoardMemberGuard)
   @Post(':boardId/invite')
   async sendMailAndInvite(
     @Param('boardId') boardId: number,
-    @Body('to') to: string | string[],
+    @Body() mailDto: MailDto,
   ) {
+    const to = mailDto.to;
     const board = await this.boardService.findOne(boardId);
-
-    if (!Array.isArray(to)) {
-      to = [to];
-    }
 
     await Promise.all(
       to.map(async (email) => {

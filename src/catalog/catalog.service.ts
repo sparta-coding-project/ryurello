@@ -27,7 +27,10 @@ export class CatalogService {
 
   /* catalog 단일 조회 */
   async getOneCatalog(catalogId: number) {
-    return await this.catalogRepository.findOneBy({ catalogId: catalogId });
+    const result = await this.catalogRepository.findOneBy({
+      catalogId: catalogId,
+    });
+    return { result };
   }
   /* catalog 제목 수정 */
   async updateCatalogTitle(catalogId: number, title: string) {

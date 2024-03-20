@@ -1,5 +1,5 @@
 import { PickType } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsStrongPassword } from 'class-validator';
+import { IsNotEmpty, IsStrongPassword } from 'class-validator';
 import { User } from 'src/entities/users.entity';
 
 export class SignUpDto extends PickType(User, [

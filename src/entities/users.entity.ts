@@ -58,6 +58,9 @@ export class User {
   @OneToMany(() => BoardUser, (boardUser) => boardUser.user)
   boardUsers: BoardUser[];
 
+  @Column({ type: 'varchar', nullable: true })
+  profileImage: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
