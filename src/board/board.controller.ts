@@ -18,8 +18,11 @@ import { MailService } from 'src/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/entities/types/boardUserRole.type';
+import { BoardMemberGuard } from 'src/auth/boardusers.guard';
 
 @ApiTags('board')
 @Controller('board')
@@ -75,13 +78,14 @@ export class BoardController {
 
   /**
    * 보드 상세 조회
-   * @param id
+   * @param boardId
    * @returns
    */
   @ApiBearerAuth()
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    const data = await this.boardService.findOne(id);
+  @Get(':boardId')
+  @UseGuards(AuthGuard('jwt'), BoardMemberGuard)
+  async findOne(@Param('boardId') boardId: number) {
+    const data = await this.boardService.findOne(boardId);
 
     if (!data) {
       return {
@@ -100,10 +104,22 @@ export class BoardController {
 
   /**
    * 보드 초대
+   * @param boardId
    * @returns
    */
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        to: {
+          type: 'string',
+          example: ['user1@example.com', 'user2@example.com'],
+        },
+      },
+    },
+  })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), BoardMemberGuard)
   @Post(':boardId/invite')
   async sendMailAndInvite(
     @Param('boardId') boardId: number,
@@ -120,7 +136,7 @@ export class BoardController {
         const payload = { boardId, email };
         const inviteToken = this.jwtService.sign(payload);
         const subject = 'Ryurello - 보드 초대';
-        const url = `http://${process.env.DB_HOST}:${process.env.DB_PORT}/board/${boardId}/invited?token=${inviteToken}`;
+        const url = `http://${process.env.DB_HOST}:${process.env.PORT}/board/${boardId}/invited?token=${inviteToken}`;
         const content = `<p>귀하는 ${board.title}의 멤버로 초대되었습니다.<p>
         <p>아래 링크를 눌러 초대를 수락할 수 있습니다.<p>
         <a href="${url}">수락하기</a>`;
@@ -141,14 +157,15 @@ export class BoardController {
    */
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @Post(':boardId/invited')
+  @Get(':boardId/invited')
   async acceptInvitation(
     @Param('boardId') boardId: number,
     @Query('token') token: string,
     @Req() req: any,
   ) {
-    const payload = this.jwtService.verify(token);
-    const { invitedBoardId, userEmail } = payload;
+    const payload = await this.jwtService.verify(token);
+    const invitedBoardId = payload['boardId'];
+    const userEmail = payload['email'];
 
     if (invitedBoardId !== boardId) {
       throw new BadRequestException('잘못된 초대입니다.');
@@ -166,27 +183,40 @@ export class BoardController {
     };
   }
 
-  // /**
-  //  * 보드 수정
-  //  * @param id
-  //  * @returns
-  //  */
-  // @ApiBearerAuth()
-  // @Patch(':id')
-  // update(@Param('id') id: number, @Body() updateBoardDto: UpdateBoardDto) {
-  //   return this.boardService.update(+id, updateBoardDto);
-  // }
+  /**
+   * 보드 수정
+   * @param boardId
+   * @param updateBoardDto
+   * @returns
+   */
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'), BoardMemberGuard)
+  @Patch(':boardId')
+  update(
+    @Param('boardId') boardId: number,
+    @Body() updateBoardDto: UpdateBoardDto,
+  ) {
+    this.boardService.update(+boardId, updateBoardDto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '성공적으로 수정되었습니다.',
+    };
+  }
 
-  // /**
-  //  * 보드 삭제
-  //  * @param id
-  //  * @returns
-  //  */
-  // @ApiBearerAuth()
-  // @Roles(UserRole.Admin)
-  // @UseGuards(RolesGuard)
-  // @Delete(':id')
-  // remove(@Param('id') id: number) {
-  //   return this.boardService.remove(+id);
-  // }
+  /**
+   * 보드 삭제
+   * @param boardId
+   * @returns
+   */
+  @Roles(Role.Admin)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'), BoardMemberGuard)
+  @Delete(':boardId')
+  remove(@Param('boardId') boardId: number) {
+    this.boardService.remove(+boardId);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '성공적으로 삭제되었습니다.',
+    };
+  }
 }

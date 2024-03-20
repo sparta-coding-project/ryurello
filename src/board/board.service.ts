@@ -9,7 +9,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateBoardDto } from './dto/create-board.dto';
-import { RemoveBoardDto } from './dto/remove-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { User } from 'src/entities/users.entity';
 import { Board } from 'src/entities/boards.entity';
@@ -43,6 +42,13 @@ export class BoardService {
     return board.boardId;
   }
 
+  async isUserMemberOfBoard(boardId: number, userId: number) {
+    const isExist = await this.boardUserRepository.findOne({
+      where: { board: { boardId }, user: { userId } },
+    });
+    return Boolean(isExist);
+  }
+
   async addUserToBoard(boardId: number, email: string) {
     const board = await this.boardRepository.findOne({ where: { boardId } });
     if (!board) {
@@ -52,6 +58,12 @@ export class BoardService {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+
+    const isExist = this.isUserMemberOfBoard(boardId, user.userId);
+
+    if (isExist) {
+      throw new ConflictException('이미 초대된 사용자입니다.');
     }
 
     const boardUser = this.boardUserRepository.create({
@@ -76,31 +88,31 @@ export class BoardService {
     });
   }
 
-  // async update(boardId: number, updateBoardDto: UpdateBoardDto) {
-  //   const { background_color, description } = updateBoardDto;
-  //   const board = await this.boardRepository.findOne({
-  //     where: { boardId },
-  //   });
+  async update(boardId: number, updateBoardDto: UpdateBoardDto) {
+    const { title, background_color, description } = updateBoardDto;
+    const board = await this.boardRepository.findOne({
+      where: { boardId },
+    });
 
-  //   if (_.isNil(board)) {
-  //     throw new NotFoundException('보드를 찾을 수 없습니다.');
-  //   }
+    if (_.isNil(board)) {
+      throw new NotFoundException('보드를 찾을 수 없습니다.');
+    }
 
-  //   await this.boardRepository.update(
-  //     { boardId },
-  //     { background_color, description },
-  //   );
-  // }
+    await this.boardRepository.update(
+      { boardId },
+      { title, background_color, description },
+    );
+  }
 
-  // async remove(boardId: number, removeBoardDto: RemoveBoardDto) {
-  //   const board = await this.boardRepository.findOne({
-  //     where: { boardId },
-  //   });
+  async remove(boardId: number) {
+    const board = await this.boardRepository.findOne({
+      where: { boardId },
+    });
 
-  //   if (_.isNil(board)) {
-  //     throw new NotFoundException('보드를 찾을 수 없습니다.');
-  //   }
+    if (_.isNil(board)) {
+      throw new NotFoundException('보드를 찾을 수 없습니다.');
+    }
 
-  //   return this.boardRepository.softDelete({ boardId });
-  // }
+    return this.boardRepository.delete({ boardId });
+  }
 }
