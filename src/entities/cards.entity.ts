@@ -21,7 +21,7 @@ export class Card {
   cardId: number;
 
   @ManyToOne(() => Catalog, (catalog) => catalog.cards)
-  @JoinColumn({ name: 'catalogId', referencedColumnName: 'catalogId' })
+  @JoinColumn({ name: 'catalog_id', referencedColumnName: 'catalogId' })
   catalog: Catalog;
 
   @Column({ type: 'varchar' })
@@ -52,7 +52,7 @@ export class Card {
   updatedAt: Date;
 
   @OneToMany(() => Tag, (tag) => tag.card)
-  @JoinColumn({ name: 'tagId', referencedColumnName: 'tagId' })
+  @JoinColumn({ name: 'tag_id', referencedColumnName: 'tagId' })
   tags: Tag[];
 
   @OneToMany(() => CardUser, (cardUser) => cardUser.card)

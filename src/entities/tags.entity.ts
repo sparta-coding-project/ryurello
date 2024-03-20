@@ -1,18 +1,24 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Card } from "./cards.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Card } from './cards.entity';
 
 @Entity()
 export class Tag {
   @PrimaryGeneratedColumn()
-  tagId: number
+  tagId: number;
 
-  @ManyToOne(() => Card, card => card.tags)
-  @JoinColumn({name: "cardId", referencedColumnName: "cardId"})
-  card: Card
-
-  @Column()
-  title: string
+  @ManyToOne(() => Card, (card) => card.tags)
+  @JoinColumn({ name: 'card_id', referencedColumnName: 'cardId' })
+  card: Card;
 
   @Column()
-  bgColor: string
+  title: string;
+
+  @Column()
+  bgColor: string;
 }

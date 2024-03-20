@@ -10,14 +10,17 @@ import {
   Res,
   Req,
   UnauthorizedException,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SignUpDto } from './dto/signUp.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('user')
 @Controller('user')
@@ -70,6 +73,76 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
+  }
+  /**
+   * 프로필 이미지 업로드
+   * @param id
+   * @param file
+   * @returns
+   */
+  @Post('profileImage/:id')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Image file',
+    type: 'object',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(
+    @Param('id') id: number,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return await this.userService.uploadImage(image, id);
+  }
+  /**
+   * 프로필 이미지 업데이트
+   * @param id
+   * @param file
+   * @returns
+   */
+  @Patch('profileImage/:id')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Image file',
+    type: 'object',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptor('file'))
+  async updateImage(
+    @Param('id') id: number,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    await this.userService.deleteImage(id);
+    await this.userService.uploadImage(image, id);
+    return { message: '프로필 이미지가 수정되었습니다.' };
+  }
+  /**
+   * 프로필 이미지 삭제
+   * @param id
+   * @returns
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('profileImage/:id')
+  async deleteImage(@Param('id') id: number) {
+    return await this.userService.deleteImage(id);
   }
   /**
    * 유저 삭제
