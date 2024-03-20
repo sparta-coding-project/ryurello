@@ -26,7 +26,7 @@ export class Comment {
   @Column({ type: 'enum', enum: Like })
   like?: Like;
 
-  @Column({ type: 'datetime', nullable: false })
+  @Column({ type: 'datetime' })
   createdAt: Date;
 
   @ManyToOne(() => Card, (card) => card.comments)

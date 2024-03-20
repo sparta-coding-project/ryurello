@@ -43,12 +43,14 @@ export class CatalogService {
   /* catalog 제목 수정 */
   async updateCatalogTitle(catalogId: number, title: string) {
     const catalog = await this.catalogRepository.findOneBy({
-      catalogId: catalogId,
+      catalogId,
     });
     if (_.isNil(catalog)) {
       throw new NotFoundException('해당 catalog를 찾을 수 없습니다.');
     }
     await this.catalogRepository.update({ catalogId }, { title });
+
+    return { message: 'catalog의 제목이 수정되었습니다.' };
   }
 
   /* catalog 순서 변경 */
