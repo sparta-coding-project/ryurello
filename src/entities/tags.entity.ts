@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Card } from './cards.entity';
 
-@Entity()
+@Entity({ name: "tags"})
 export class Tag {
   @PrimaryGeneratedColumn()
   tagId: number;

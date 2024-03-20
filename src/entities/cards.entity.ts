@@ -14,7 +14,7 @@ import { Tag } from './tags.entity';
 import { CardUser } from './cardUsers.entity';
 import { Comment } from './comments.entity';
 
-@Entity()
+@Entity({ name: "cards"})
 export class Card {
   @PrimaryGeneratedColumn()
   cardId: number;
