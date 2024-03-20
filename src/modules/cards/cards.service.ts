@@ -72,19 +72,22 @@ export class CardsService {
       order: { sequence: 'asc' },
     });
     // 변경해야 하는 카드
-    const card = [...cards].filter(c => c.cardId === +cardId)[0];
-    cards = cards.filter(c => c.cardId !== +cardId)
+    const card = [...cards].filter((c) => c.cardId === +cardId)[0];
+    cards = cards.filter((c) => c.cardId !== +cardId);
     cards.splice(sequence - 1, 0, card);
-    console.log(cards)
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
       for (let idx in cards) {
         const { cardId } = cards[+idx];
-        console.log("cardId:", cardId)
-        console.log("idx:", +idx + 1)
-        await queryRunner.manager.update(Card, { cardId }, { sequence: +idx+1});
+        await this.dataSource
+          .createQueryBuilder()
+          .update(Card)
+          .set({
+            sequence: +idx + 1,
+          })
+          .where('cardId = :cardId', { cardId }).execute();
       }
     } catch (error) {
       throw new HttpException('card sequence 변경 transaction error', 403);
