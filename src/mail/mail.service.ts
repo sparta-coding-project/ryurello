@@ -9,7 +9,7 @@ export class MailService {
     this.transporter = nodemailer.createTransport({
       pool: true,
       service: process.env.MAIL_SERVICE,
-      host: 'smtp.naver.com',
+      host: process.env.MAIL_HOST,
       port: 587,
       secure: false,
       requireTLS: true,
@@ -24,7 +24,7 @@ export class MailService {
   async sendMail(to: string, subject: string, content: string) {
     try {
       await this.transporter.sendMail({
-        from: 'lawinproject@naver.com',
+        from: process.env.MAIL_USER,
         to: to, //배열 가능
         subject: subject,
         html: content,
