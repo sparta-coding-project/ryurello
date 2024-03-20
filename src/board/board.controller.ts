@@ -4,6 +4,7 @@ import {
   Post,
   Body,
   Req,
+  Query,
   Patch,
   Param,
   HttpStatus,
@@ -18,7 +19,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { MailDto } from './dto/mail.dto';
 
-@ApiTags('보드')
+@ApiTags('board')
 @Controller('board')
 export class BoardController {
   constructor(
@@ -109,10 +110,11 @@ export class BoardController {
   ) {
     const to = mailDto.to;
     const board = await this.boardService.findOne(boardId);
+    const inviteToken = '토큰만들어서넣기'
     const subject = 'Ryurello - 보드 초대';
-    const url = `https://www.naver.com/`;
-    const content = `귀하는 ${board.title}의 멤버로 초대되었습니다.
-    아래 링크를 눌러 초대를 수락할 수 있습니다.
+    const url = `http://${process.env.DB_HOST}:${process.env.DB_PORT}/board/${boardId}/invited?token=${inviteToken}`;
+    const content = `<p>귀하는 ${board.title}의 멤버로 초대되었습니다.<p>
+    <p>아래 링크를 눌러 초대를 수락할 수 있습니다.<p>
     <a href="${url}">수락하기</a>`;
 
     if (Array.isArray(to)) {
@@ -140,9 +142,10 @@ export class BoardController {
   // @Post(':boardId/invited')
   // async acceptInvitation(
   //   @Param('boardId') boardId: number,
-  //   @Body('code') code: string,
+  //   @Query('token') token: string,
   // ) {
-  //   const board = await this.boardService.findOne(boardId);
+
+  //   await this.boardService.addUserToBoard(boardId, email);
 
   //   return {
   //     statusCode: HttpStatus.OK,

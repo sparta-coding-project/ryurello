@@ -43,6 +43,26 @@ export class BoardService {
     return board.boardId;
   }
 
+  async addUserToBoard(boardId: number, email: string) {
+    const board = await this.boardRepository.findOne({ where: { boardId } });
+    if (!board) {
+      throw new NotFoundException('보드를 찾을 수 없습니다.');
+    }
+
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+
+    const boardUser = this.boardUserRepository.create({
+      board,
+      user,
+    });
+    await this.boardUserRepository.save(boardUser);
+
+    return;
+  }
+
   async findAll() {
     return await this.boardRepository.find({
       select: ['boardId', 'title', 'background_color'],

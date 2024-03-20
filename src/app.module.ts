@@ -8,6 +8,7 @@ import { CommentModule } from './comment/comment.module';
 import { BoardModule } from './board/board.module';
 import { UserModule } from './user/user.module';
 import { MailModule } from './mail/mail.module';
+import { CardsModule } from './modules/cards/cards.module';
 import Joi from 'joi';
 import { AuthModule } from './auth/auth.module';
 
@@ -45,6 +46,7 @@ const typeOrmModuleOptions = {
       }),
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
+    CardsModule,
     BoardModule,
     UserModule,
     MailModule,
