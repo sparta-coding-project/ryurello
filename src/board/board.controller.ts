@@ -10,9 +10,12 @@ import {
   HttpStatus,
   UseGuards,
   Delete,
+  BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { MailService } from 'src/mail/mail.service';
+import { JwtService } from '@nestjs/jwt';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -24,6 +27,7 @@ export class BoardController {
   constructor(
     private readonly boardService: BoardService,
     private readonly mailService: MailService,
+    private readonly jwtService: JwtService,
   ) {}
 
   /**
@@ -106,22 +110,24 @@ export class BoardController {
     @Body('to') to: string | string[],
   ) {
     const board = await this.boardService.findOne(boardId);
-    const inviteToken = '토큰만들어서넣기'
-    const subject = 'Ryurello - 보드 초대';
-    const url = `http://${process.env.DB_HOST}:${process.env.DB_PORT}/board/${boardId}/invited?token=${inviteToken}`;
-    const content = `<p>귀하는 ${board.title}의 멤버로 초대되었습니다.<p>
-    <p>아래 링크를 눌러 초대를 수락할 수 있습니다.<p>
-    <a href="${url}">수락하기</a>`;
 
-    if (Array.isArray(to)) {
-      await Promise.all(
-        to.map(async (email) => {
-          await this.mailService.sendMail(email, subject, content);
-        }),
-      );
-    } else {
-      await this.mailService.sendMail(to, subject, content);
+    if (!Array.isArray(to)) {
+      to = [to];
     }
+
+    await Promise.all(
+      to.map(async (email) => {
+        const payload = { boardId, email };
+        const inviteToken = this.jwtService.sign(payload);
+        const subject = 'Ryurello - 보드 초대';
+        const url = `http://${process.env.DB_HOST}:${process.env.DB_PORT}/board/${boardId}/invited?token=${inviteToken}`;
+        const content = `<p>귀하는 ${board.title}의 멤버로 초대되었습니다.<p>
+        <p>아래 링크를 눌러 초대를 수락할 수 있습니다.<p>
+        <a href="${url}">수락하기</a>`;
+
+        await this.mailService.sendMail(email, subject, content);
+      }),
+    );
 
     return {
       statusCode: HttpStatus.OK,
@@ -129,25 +135,36 @@ export class BoardController {
     };
   }
 
-  // /**
-  //  * 보드 초대 수락
-  //  * @returns
-  //  */
-  // @ApiBearerAuth()
-  // @UseGuards(AuthGuard('jwt'))
-  // @Post(':boardId/invited')
-  // async acceptInvitation(
-  //   @Param('boardId') boardId: number,
-  //   @Query('token') token: string,
-  // ) {
+  /**
+   * 보드 초대 수락
+   * @returns
+   */
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':boardId/invited')
+  async acceptInvitation(
+    @Param('boardId') boardId: number,
+    @Query('token') token: string,
+    @Req() req: any,
+  ) {
+    const payload = this.jwtService.verify(token);
+    const { invitedBoardId, userEmail } = payload;
 
-  //   await this.boardService.addUserToBoard(boardId, email);
+    if (invitedBoardId !== boardId) {
+      throw new BadRequestException('잘못된 초대입니다.');
+    }
 
-  //   return {
-  //     statusCode: HttpStatus.OK,
-  //     message: '보드 멤버로 추가되었습니다.',
-  //   };
-  // }
+    if (userEmail !== req.user.email) {
+      throw new UnauthorizedException('다른 사용자의 초대입니다.');
+    }
+
+    await this.boardService.addUserToBoard(boardId, userEmail);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: '보드 멤버로 추가되었습니다.',
+    };
+  }
 
   // /**
   //  * 보드 수정
