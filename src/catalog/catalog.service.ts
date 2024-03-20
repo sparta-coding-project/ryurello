@@ -56,19 +56,23 @@ export class CatalogService {
     const catalog = await this.catalogRepository.findOneBy({
       catalogId: catalogId,
     });
+
     if (_.isNil(catalog)) {
       throw new NotFoundException('해당 catalog를 찾을 수 없습니다.');
     }
-    const board = catalog.board;
 
-    const catalogs = await this.catalogRepository.findBy({ board });
+    const catalogs = await this.catalogRepository.find({
+      where: {
+        board_id: catalog.board_id,
+      },
+    });
     console.log(catalogs);
     catalogs.splice(sequence - 1, 0, catalog);
     const changedCatalogs = catalogs.map((c) => {
       // if (c.sequence - 1 !== catalogs.indexOf(c)) {
       //   await this.catalogRepository.update({c.catalogId},{})
       // }
-      console.log(c);
+      console.log(c.sequence);
     });
   }
   /* catalog 삭제 */

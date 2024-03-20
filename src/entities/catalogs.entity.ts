@@ -36,6 +36,9 @@ export class Catalog {
   @JoinColumn({ name: 'board_id', referencedColumnName: 'boardId' })
   board: Board;
 
+  @Column({ type: 'int', nullable: false })
+  board_id: number;
+
   @OneToMany(() => Card, (card) => card.catalog)
   cards: Card[];
 }
