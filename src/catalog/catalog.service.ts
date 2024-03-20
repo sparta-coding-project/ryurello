@@ -50,6 +50,7 @@ export class CatalogService {
     }
     await this.catalogRepository.update({ catalogId }, { title });
   }
+
   /* catalog 순서 변경 */
   async updateCatalogSequence(catalogId: number, sequence: number) {
     const catalog = await this.catalogRepository.findOneBy({
@@ -59,7 +60,7 @@ export class CatalogService {
       throw new NotFoundException('해당 catalog를 찾을 수 없습니다.');
     }
     const board = catalog.board;
-    console.log(typeof board);
+
     const catalogs = await this.catalogRepository.findBy({ board });
     console.log(catalogs);
     catalogs.splice(sequence - 1, 0, catalog);
