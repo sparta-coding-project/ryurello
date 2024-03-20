@@ -56,9 +56,9 @@ export class CardsController {
   @ApiQuery({name:"cardId", required:true, description: "number" })
   @ApiQuery({name:"sequence", required:true, description: "number" })
   @Patch('sequence')
-  changeSeq(@Query() query: { catalogId: number, cardId: number, sequence: number }) {
+  changeCardPosition(@Query() query: { catalogId: number, cardId: number, sequence: number }) {
     try {
-      const changedSeq = this.cardsService.changeSeq(query);
+      const changedSeq = this.cardsService.changeCardPosition(query);
     } catch (error) {
       return error
     }

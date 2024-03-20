@@ -60,7 +60,7 @@ export class CardsService {
     }
   }
 
-  async changeSeq(query: {
+  async changeCardPosition(query: {
     catalogId: number;
     cardId: number;
     sequence: number;
@@ -72,7 +72,7 @@ export class CardsService {
       order: { sequence: 'asc' },
     });
     // 변경해야 하는 카드
-    const card = [...cards].filter((c) => c.cardId === +cardId)[0];
+    const card = await this.cardsRepository.findOneBy({cardId});
     cards = cards.filter((c) => c.cardId !== +cardId);
     cards.splice(sequence - 1, 0, card);
 
@@ -86,6 +86,7 @@ export class CardsService {
           .update(Card)
           .set({
             sequence: +idx + 1,
+            catalogId: +catalogId
           })
           .where('cardId = :cardId', { cardId }).execute();
       }
