@@ -1,10 +1,5 @@
 import { PickType } from '@nestjs/swagger';
-import {
-  IsOptional,
-  IsString,
-  IsStrongPassword,
-  Validate,
-} from 'class-validator';
+import { IsOptional, IsString, Validate } from 'class-validator';
 import { User } from 'src/entities/users.entity';
 import { IsStrongPasswordNullable } from '../validate/password.validate';
 

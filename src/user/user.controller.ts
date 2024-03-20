@@ -12,6 +12,7 @@ import {
   UnauthorizedException,
   UploadedFile,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SignUpDto } from './dto/signUp.dto';
@@ -34,6 +35,11 @@ export class UserController {
   @Post('register')
   async register(@Body() signUpDto: SignUpDto) {
     return await this.userService.register(signUpDto);
+  }
+
+  @Get('validation/:id')
+  async validateUserByEmail(@Param() id: number, @Query() email: string) {
+    return await this.userService.validateUserByEmail(id, email);
   }
   /**
    * 로그인

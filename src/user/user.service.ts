@@ -14,6 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 import _ from 'lodash';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { AwsService } from 'src/utils/aws/aws.service';
+import { EmailValid } from 'src/entities/types/userValid.type';
 
 @Injectable()
 export class UserService {
@@ -38,6 +39,7 @@ export class UserService {
       password: hashedPassword,
       nickName: signUpDto.nickName,
     });
+    this.sendMail(newUser.userId, newUser.email);
 
     return { newUser, message: '회원가입에 성공하셨습니다.' };
   }
@@ -67,6 +69,25 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async sendMail(userId: number, to: string) {
+    const user = await this.findOne(userId);
+    const subject = 'Ryurello - 회원가입을 환영합니다.';
+    const url = `http://localhost:3000/user/validation/${userId}/email=${user.email}`;
+    const content = `<p> ryurello에 가입하신 걸 환영합니다..<p>
+    <p>아래 링크를 눌러 초대를 수락할 수 있습니다.<p>
+    <a href="${url}">수락하기</a>`;
+  }
+
+  async validateUserByEmail(userId: number, email: string) {
+    const user = await this.userRepository.findOneBy({ userId, email });
+    if (_.isNil(user)) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+    user.emailValid = EmailValid.Permitted;
+    await this.userRepository.save(user);
+    return { user };
   }
 
   async update(userId: number, updateUserDto: UpdateUserDto) {

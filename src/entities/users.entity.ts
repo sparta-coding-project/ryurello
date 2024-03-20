@@ -14,6 +14,7 @@ import {
   IsString,
   IsStrongPassword,
 } from 'class-validator';
+import { EmailValid } from './types/userValid.type';
 
 @Index('email', ['email'], { unique: true })
 @Entity({
@@ -60,6 +61,13 @@ export class User {
 
   @Column({ type: 'varchar', nullable: true })
   profileImage: string;
+
+  @Column({
+    type: 'enum',
+    enum: EmailValid,
+    default: EmailValid.notPermitted,
+  })
+  emailValid: EmailValid;
 
   @CreateDateColumn()
   createdAt: Date;
