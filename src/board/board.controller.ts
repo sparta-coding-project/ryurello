@@ -18,7 +18,7 @@ import { MailService } from 'src/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { MailDto } from './dto/mail.dto';
 import { Roles } from 'src/auth/roles.decorator';
@@ -143,6 +143,7 @@ export class BoardController {
    * 보드 초대 수락
    * @returns
    */
+  @ApiExcludeEndpoint()
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Get(':boardId/invited')
