@@ -5,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
+  Unique,
 } from 'typeorm';
 import { Card } from './cards.entity';
 import { Board } from './boards.entity';
@@ -19,13 +20,13 @@ export class Catalog {
   /**
    *  @example "catalog 예시 - To Do"
    */
-  @Column({ type: 'varchar', unique: true, nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   title: string;
 
   /**
    * @example 1
    */
-  @Column({ type: 'int', unique: true, nullable: false })
+  @Column({ type: 'int', nullable: false })
   sequence: number;
 
   @ManyToOne(() => Board, (board) => board.catalogs, {

@@ -13,17 +13,18 @@ export class CatalogService {
   /* catalog 생성 */
   async createCatalog(title: string, sequence: number, boardId: number) {
     await this.catalogRepository.save({
+      board_id: boardId,
       title,
       sequence,
-      boardId,
     });
+    console.log(boardId, sequence);
     return { message: `${boardId}의 ${title} catalog가 생성되었습니다.` };
   }
 
   /* catalog 전체 조회 */
-  async getCatalogs(boardId: number) {
-    return await this.catalogRepository.find(board, { relations: ['board'] });
-  }
+  // async getCatalogs(boardId: number) {
+  //   return await this.catalogRepository.find(where:{},include:{});
+  // }
 
   /* catalog 단일 조회 */
   async getOneCatalog(catalogId: number) {
@@ -48,6 +49,7 @@ export class CatalogService {
       throw new NotFoundException('해당 catalog를 찾을 수 없습니다.');
     }
     const board = catalog.board;
+    console.log(typeof board);
     const catalogs = await this.catalogRepository.findBy({ board });
     console.log(catalogs);
     catalogs.splice(sequence - 1, 0, catalog);
