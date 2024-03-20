@@ -38,7 +38,10 @@ export class UserController {
   }
 
   @Get('validation/:id')
-  async validateUserByEmail(@Param() id: number, @Query() email: string) {
+  async validateUserByEmail(
+    @Param('id') id: number,
+    @Query('email') email: string,
+  ) {
     return await this.userService.validateUserByEmail(id, email);
   }
   /**

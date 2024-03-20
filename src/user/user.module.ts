@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/users.entity';
 import { AwsModule } from 'src/utils/aws/aws.module';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { AwsModule } from 'src/utils/aws/aws.module';
     AwsModule,
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, MailService],
   exports: [UserService],
 })
 export class UserModule {}
