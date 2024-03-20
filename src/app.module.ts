@@ -11,6 +11,8 @@ import { UserModule } from './user/user.module';
 import { CardsModule } from './modules/cards/cards.module';
 import Joi from 'joi';
 import { AuthModule } from './auth/auth.module';
+import { TagsModule } from './modules/tags/tags.module';
+import { CardUsersModule } from './modules/card-users/card-users.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -53,6 +55,8 @@ const typeOrmModuleOptions = {
     AuthModule,
     CatalogModule,
     CommentModule,
+    TagsModule,
+    CardUsersModule,
   ],
   controllers: [],
   providers: [],
