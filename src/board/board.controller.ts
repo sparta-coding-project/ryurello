@@ -17,6 +17,7 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { MailDto } from './dto/mail.dto';
 
 @ApiTags('board')
 @Controller('board')
@@ -96,6 +97,8 @@ export class BoardController {
 
   /**
    * 보드 초대
+   * @param to
+   * @param boardId
    * @returns
    */
   @ApiBearerAuth()
@@ -103,8 +106,9 @@ export class BoardController {
   @Post(':boardId/invite')
   async sendMailAndInvite(
     @Param('boardId') boardId: number,
-    @Body('to') to: string | string[],
+    @Body() mailDto: MailDto,
   ) {
+    const to = mailDto.to;
     const board = await this.boardService.findOne(boardId);
     const inviteToken = '토큰만들어서넣기'
     const subject = 'Ryurello - 보드 초대';

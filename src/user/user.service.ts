@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -12,6 +13,7 @@ import { SignUpDto } from './dto/signUp.dto';
 import { JwtService } from '@nestjs/jwt';
 import _ from 'lodash';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { AwsService } from 'src/utils/aws/aws.service';
 
 @Injectable()
 export class UserService {
@@ -19,6 +21,7 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly awsService: AwsService,
   ) {}
   async register(signUpDto: SignUpDto) {
     const existingUser = await this.userRepository.findOneBy({
@@ -36,7 +39,7 @@ export class UserService {
       nickName: signUpDto.nickName,
     });
 
-    return { message: '회원가입에 성공하셨습니다.' };
+    return { newUser, message: '회원가입에 성공하셨습니다.' };
   }
 
   async login(email: string, password: string) {
@@ -92,6 +95,53 @@ export class UserService {
     return { updatedUser };
   }
 
+  async uploadImage(image: Express.Multer.File, id: number) {
+    if (!image) {
+      throw new BadRequestException('파일이 전송되지 않았습니다.');
+    }
+    const user = await this.userRepository.findOne({
+      where: { userId: id },
+    });
+    if (_.isNil(user)) {
+      throw new NotFoundException('유저가 존재하지 않습니다.');
+    }
+
+    const ext = image.originalname.split('.')[1];
+    const imageName = image.originalname.split('.')[0];
+    const imageUrl = await this.awsService.imageUploadToS3(
+      `${imageName}.${ext}`,
+      image,
+      ext,
+    );
+
+    user.profileImage = imageUrl;
+
+    await this.userRepository.save(user);
+
+    return { imageUrl };
+  }
+
+  async deleteImage(id) {
+    const user = await this.userRepository.findOneBy({ userId: id });
+    if (!user) {
+      throw new NotFoundException('해당 사용자가 존재하지 않습니다.');
+    }
+    if (!user.profileImage) {
+      throw new NotFoundException('삭제할 프로필 이미지가 없습니다.');
+    }
+    try {
+      const key = user.profileImage.split('/')[4];
+
+      await this.awsService.deleteS3Object(key);
+      user.profileImage = null;
+      await this.userRepository.save(user);
+
+      return { message: '성공적으로 삭제하셨습니다.' };
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
   async delete(userId: number) {
     const user = await this.userRepository.findOne({
       where: { userId },
@@ -100,7 +150,7 @@ export class UserService {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
 
-    const deleteUser = await this.userRepository.delete({ userId });
+    await this.userRepository.delete({ userId });
 
     return { message: '성공적으로 삭제되었습니다.' };
   }
