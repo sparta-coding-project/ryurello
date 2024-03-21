@@ -37,7 +37,7 @@ export class User {
     },
   )
   @IsNotEmpty({ message: '비밀번호를 입력해주세요.' })
-  @Column({ type: 'varchar', select: false, nullable: false })
+  @Column({ type: 'varchar', select: false, nullable: true })
   password: string;
 
   @IsString()

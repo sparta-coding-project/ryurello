@@ -13,6 +13,7 @@ import {
   UploadedFile,
   UseInterceptors,
   Query,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SignUpDto } from './dto/signUp.dto';
@@ -39,7 +40,12 @@ export class UserController {
    */
   @Post('register')
   async register(@Body() signUpDto: SignUpDto) {
-    return await this.userService.register(signUpDto);
+    const data = await this.userService.register(signUpDto);
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '회원 가입이 완료되었습니다.',
+      data,
+    };
   }
 
   @ApiExcludeEndpoint()
@@ -48,7 +54,12 @@ export class UserController {
     @Param('id') id: number,
     @Query('email') email: string,
   ) {
-    return await this.userService.validateUserByEmail(id, email);
+    const data = this.userService.validateUserByEmail(id, email);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '메일 인증이 완료되었습니다.',
+      data,
+    };
   }
   /**
    * 로그인
@@ -65,7 +76,11 @@ export class UserController {
       loginDto.password,
     );
     res.cookie('Authorization', `Bearer ${accessToken.access_token}`);
-    return accessToken;
+    return {
+      statusCode: HttpStatus.OK,
+      message: '로그인 되었습니다.',
+      accessToken,
+    };
   }
   /**
    * 프로필 조회
@@ -76,7 +91,10 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   async findOne(@Param('id') id: string) {
     const user = await this.userService.findOne(+id);
-    return { user };
+    return {
+      statusCode: HttpStatus.OK,
+      user,
+    };
   }
   /**
    * 유저정보 수정
@@ -87,7 +105,12 @@ export class UserController {
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'))
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+    const data = this.userService.update(+id, updateUserDto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '성공적으로 수정되었습니다.',
+      data,
+    };
   }
   /**
    * 프로필 이미지 업로드
@@ -147,7 +170,10 @@ export class UserController {
   ) {
     await this.userService.deleteImage(id);
     await this.userService.uploadImage(image, id);
-    return { message: '프로필 이미지가 수정되었습니다.' };
+    return {
+      statusCode: HttpStatus.OK,
+      message: '프로필 이미지가 수정되었습니다.',
+    };
   }
   /**
    * 프로필 이미지 삭제
@@ -178,6 +204,9 @@ export class UserController {
     }
     const deleteUser = await this.userService.delete(+id);
     res.clearCookie('Authorization');
-    return deleteUser;
+    return {
+      statusCode: HttpStatus.OK,
+      message: deleteUser.message,
+    };
   }
 }

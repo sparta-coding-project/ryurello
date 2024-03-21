@@ -43,7 +43,7 @@ export class UserService {
     });
     await this.sendMail(newUser.userId, newUser.email);
 
-    return { newUser, message: '회원가입에 성공하셨습니다.' };
+    return newUser;
   }
 
   async login(email: string, password: string) {
