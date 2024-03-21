@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
+import { Repository } from 'typeorm';
+import { Tag } from '../../entities/tags.entity';
 
 @Injectable()
 export class TagsService {
-  create(createTagDto: CreateTagDto) {
-    return 'This action adds a new tag';
+  constructor(private readonly tagsRepository: Repository<Tag>) {}
+  async create(createTagDto: CreateTagDto) {
+    const { cardId, title } = createTagDto;
+    const tag = this.tagsRepository.findOneBy({ cardId, title });
+    if (tag) {
+      throw new HttpException('이미 있는 태그입니다.', 403);
+    }
+    return await this.tagsRepository.save(createTagDto);
   }
 
-  findAll() {
-    return `This action returns all tags`;
+  async findAllByCardId(cardId: number) {
+    return await this.tagsRepository.findBy({cardId})
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tag`;
+  async update(tagId: number, updateTagDto: UpdateTagDto) {
+    return await this.tagsRepository.update({ tagId }, updateTagDto)
   }
 
-  update(id: number, updateTagDto: UpdateTagDto) {
-    return `This action updates a #${id} tag`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} tag`;
+  async remove(tagId: number) {
+    return await this.tagsRepository.delete({tagId})
   }
 }

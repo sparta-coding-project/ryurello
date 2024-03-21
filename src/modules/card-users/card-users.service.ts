@@ -1,10 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateCardUserDto } from './dto/create-card-user.dto';
-import { UpdateCardUserDto } from './dto/update-card-user.dto';
 import { Repository } from 'typeorm';
 import { CardUser } from 'src/entities/cardUsers.entity';
-import { Board } from '../../entities/boards.entity';
-import { Card } from '../../entities/cards.entity';
 
 @Injectable()
 export class CardUsersService {
@@ -13,7 +10,11 @@ export class CardUsersService {
     ) {}
 
   async create(createCardUserDto: CreateCardUserDto) {
-    
+    const user = await this.cuRepository.findOneBy(createCardUserDto);
+    if (user) {
+      throw new HttpException('사용자를 찾을 수 없습니다.', 404);
+    }
+    return await this.cuRepository.save(createCardUserDto)
   }
 
   async findUsersByCardId(cardId: number) {
