@@ -89,10 +89,14 @@ export class BoardService {
   }
 
   async findOne(boardId: number) {
-    return await this.boardRepository.findOne({
-      where: { boardId },
-      relations: ['catalogs'],
-    });
+    return await this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoinAndSelect('board.catalogs', 'catalogs')
+      .leftJoinAndSelect('catalogs.cards', 'cards')
+      .orderBy('catalogs.sequence', 'ASC')
+      .addOrderBy('cards.sequence', 'ASC')
+      .where('board.boardId = :boardId', { boardId })
+      .getOne();
   }
 
   async update(boardId: number, updateBoardDto: UpdateBoardDto) {
