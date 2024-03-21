@@ -3,11 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, createQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Catalog } from 'src/entities/catalogs.entity';
 import { Board } from 'src/entities/boards.entity';
-import { Card } from 'src/entities/cards.entity';
 
 import _ from 'lodash';
 
@@ -56,6 +55,16 @@ export class CatalogService {
       where: { catalogId: catalogId },
       relations: ['cards'],
     });
+  }
+
+  async getCatalogs(boardId: number) {
+    return await this.catalogRepository
+      .createQueryBuilder('catalog')
+      .leftJoinAndSelect('catalog.cards', 'cards')
+      .orderBy('catalog.sequence', 'ASC')
+      .addOrderBy('cards.sequence', 'ASC')
+      .where('catalog.board_id = :boardId', { boardId })
+      .getMany();
   }
 
   /* catalog 제목 수정 */

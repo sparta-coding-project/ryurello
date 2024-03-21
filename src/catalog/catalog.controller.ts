@@ -16,7 +16,8 @@ import { ApiTags } from '@nestjs/swagger';
 export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
 
-  @Get('get/:catalogId')
+  /* 카탈로그 단일 조회 */
+  @Get('getOne/:catalogId')
   async findOneCatalog(
     @Param('catalogId')
     catalogId: number,
@@ -24,6 +25,13 @@ export class CatalogController {
     return await this.catalogService.getOneCatalog(catalogId);
   }
 
+  /* 해당 보드의 여러 카탈로그들 + 카드들 조회 */
+  @Get('get/:boardId')
+  async findCatalogs(@Param('boardId') boardId: number) {
+    return await this.catalogService.getCatalogs(boardId);
+  }
+
+  /* 카탈로그 생성 */
   @Post('create/:boardId')
   async createCatalog(
     @Param('boardId') boardId: number,
