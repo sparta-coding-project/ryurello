@@ -19,7 +19,12 @@ import { SignUpDto } from './dto/signUp.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiExcludeEndpoint,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -37,6 +42,7 @@ export class UserController {
     return await this.userService.register(signUpDto);
   }
 
+  @ApiExcludeEndpoint()
   @Get('validation/:id')
   async validateUserByEmail(
     @Param('id') id: number,

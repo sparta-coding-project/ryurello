@@ -23,19 +23,12 @@ import { EmailValid } from './types/userValid.type';
 export class User {
   @PrimaryGeneratedColumn()
   userId: number;
-  /**
-   * 이메일
-   * @example "sparta@sparta.com"
-   */
+
   @IsNotEmpty({ message: '이메일을 입력해 주세요.' })
   @IsEmail()
   @Column({ type: 'varchar', unique: true, nullable: false })
   email: string;
 
-  /**
-   * 비밀번호
-   * @example "strinG!2"
-   */
   @IsStrongPassword(
     {},
     {
@@ -47,10 +40,6 @@ export class User {
   @Column({ type: 'varchar', select: false, nullable: false })
   password: string;
 
-  /**
-   * 닉네임
-   * @example "티모시 샬라메"
-   */
   @IsString()
   @IsNotEmpty({ message: '닉네임을 입력해 주세요.' })
   @Column({ type: 'varchar', unique: true, nullable: false })

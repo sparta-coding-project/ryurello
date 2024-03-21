@@ -48,9 +48,12 @@ export class UserService {
 
   async login(email: string, password: string) {
     const user = await this.userRepository.findOne({
-      select: ['userId', 'email', 'password'],
+      select: ['userId', 'email', 'password', 'emailValid'],
       where: { email },
     });
+    if (user.emailValid === '메일 인증 안됨') {
+      throw new UnauthorizedException('메일 인증을 완료해 주세요');
+    }
     if (_.isNil(user)) {
       throw new UnauthorizedException('이메일을 확인해주세요');
     }
@@ -76,7 +79,7 @@ export class UserService {
   async sendMail(userId: number, to: string) {
     const user = await this.findOne(userId);
     const subject = 'Ryurello - 회원가입을 환영합니다.';
-    const url = `http://localhost:3000/user/validation/${userId}?email=${to}`;
+    const url = `http://${process.env.INVITE_URL}/user/validation/${userId}?email=${to}`;
     const content = `<p> ryurello에 가입하신 걸 환영합니다..<p>
     <p>아래 링크를 눌러 초대를 수락할 수 있습니다.<p>
     <a href="${url}">수락하기</a>`;

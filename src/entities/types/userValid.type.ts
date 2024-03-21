@@ -1,4 +1,4 @@
 export enum EmailValid {
-  notPermitted,
-  Permitted,
+  notPermitted = '메일 인증 안됨',
+  Permitted = '메일 인증 완료',
 }
