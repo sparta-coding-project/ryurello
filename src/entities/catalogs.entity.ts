@@ -5,7 +5,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
-  Unique,
 } from 'typeorm';
 import { Card } from './cards.entity';
 import { Board } from './boards.entity';
@@ -13,7 +12,6 @@ import { Board } from './boards.entity';
 @Entity({
   name: 'catalogs',
 })
-@Unique(['board', 'sequence'])
 export class Catalog {
   @PrimaryGeneratedColumn()
   catalogId: number;
