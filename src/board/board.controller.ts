@@ -11,7 +11,7 @@ import {
   UseGuards,
   Delete,
   BadRequestException,
-  UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { MailService } from 'src/mail/mail.service';
@@ -121,10 +121,21 @@ export class BoardController {
 
     await Promise.all(
       to.map(async (email) => {
+        const isUser = await this.boardService.isUser(email);
+        if (!isUser) {
+          throw new NotFoundException(
+            `${email} 님은 Ryurello 유저가 아닙니다.`,
+          );
+        }
+      }),
+    );
+
+    await Promise.all(
+      to.map(async (email) => {
         const payload = { boardId, email };
         const inviteToken = this.jwtService.sign(payload);
         const subject = 'Ryurello - 보드 초대';
-        const url = `http://${process.env.DB_HOST}:${process.env.PORT}/board/${boardId}/invited?token=${inviteToken}`;
+        const url = `http://${process.env.INVITE_URL}/board/${boardId}/invited?token=${inviteToken}`;
         const content = `<p>귀하는 ${board.title}의 멤버로 초대되었습니다.<p>
         <p>아래 링크를 눌러 초대를 수락할 수 있습니다.<p>
         <a href="${url}">수락하기</a>`;
@@ -144,13 +155,10 @@ export class BoardController {
    * @returns
    */
   @ApiExcludeEndpoint()
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @Get(':boardId/invited')
   async acceptInvitation(
     @Param('boardId') boardId: number,
     @Query('token') token: string,
-    @Req() req: any,
   ) {
     const payload = await this.jwtService.verify(token);
     const invitedBoardId = payload['boardId'];
@@ -158,10 +166,6 @@ export class BoardController {
 
     if (invitedBoardId !== boardId) {
       throw new BadRequestException('잘못된 초대입니다.');
-    }
-
-    if (userEmail !== req.user.email) {
-      throw new UnauthorizedException('다른 사용자의 초대입니다.');
     }
 
     await this.boardService.addUserToBoard(boardId, userEmail);

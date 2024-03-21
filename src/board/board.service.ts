@@ -42,6 +42,13 @@ export class BoardService {
     return board.boardId;
   }
 
+  async isUser(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+    return user;
+  }
+
   async isUserMemberOfBoard(boardId: number, userId: number) {
     const isExist = await this.boardUserRepository.findOne({
       where: { board: { boardId }, user: { userId } },
@@ -60,7 +67,7 @@ export class BoardService {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
 
-    const isExist = this.isUserMemberOfBoard(boardId, user.userId);
+    const isExist = await this.isUserMemberOfBoard(boardId, user.userId);
 
     if (isExist) {
       throw new ConflictException('이미 초대된 사용자입니다.');
@@ -82,10 +89,14 @@ export class BoardService {
   }
 
   async findOne(boardId: number) {
-    return await this.boardRepository.findOne({
-      where: { boardId },
-      select: ['title', 'background_color', 'description'],
-    });
+    return await this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoinAndSelect('board.catalogs', 'catalogs')
+      .leftJoinAndSelect('catalogs.cards', 'cards')
+      .orderBy('catalogs.sequence', 'ASC')
+      .addOrderBy('cards.sequence', 'ASC')
+      .where('board.boardId = :boardId', { boardId })
+      .getOne();
   }
 
   async update(boardId: number, updateBoardDto: UpdateBoardDto) {
