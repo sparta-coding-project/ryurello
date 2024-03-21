@@ -23,6 +23,9 @@ export class BoardUser {
   role: Role;
 
   @Column()
+  boardId: number
+
+  @Column()
   userId: number;
   @ManyToOne(() => User, (user) => user.boardUsers, {
     onDelete: 'CASCADE',

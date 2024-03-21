@@ -58,7 +58,7 @@ const typeOrmModuleOptions = {
     CatalogModule,
     CommentModule,
     TagsModule,
-    CardUsersModule,
+    // CardUsersModule,
   ],
   controllers: [],
   providers: [],

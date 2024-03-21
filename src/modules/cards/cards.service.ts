@@ -1,36 +1,75 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
-import { Card } from 'src/entities/cards.entity';
+import { Card } from '../../entities/cards.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { CardUser } from '../../entities/cardUsers.entity';
+import { Board } from '../../entities/boards.entity';
+import { BoardUser } from '../../entities/boardUsers.entity';
 
 @Injectable()
 export class CardsService {
   constructor(
     private readonly dataSource: DataSource,
+    @InjectRepository(CardUser)
+    private readonly cuRepository: Repository<CardUser>,
     @InjectRepository(Card)
     private readonly cardsRepository: Repository<Card>,
+    @InjectRepository(BoardUser)
+    private readonly boardUsersRepository: Repository<BoardUser>,
   ) {}
 
-  async createCard(catalogId: number, createCardDto: CreateCardDto) {
+  async createCard(
+    userId: number,
+    catalogId: number,
+    createCardDto: CreateCardDto,
+  ) {
+    // 카드 sequence 설정을 위해, card 길이 확인
     const cardsLength = await this.cardsRepository
       .createQueryBuilder('cards')
       .where({ catalogId })
       .getCount();
-    const prevCard = await this.cardsRepository.findOneBy({
-      title: createCardDto.title,
-    });
-    if (prevCard)
-      throw new HttpException('같은 이름을 가진 카드가 존재합니다.', 403);
+
+    // title이 같은 Card가 있는지 확인
+    // const prevCard = await this.cardsRepository.findOneBy({
+    //     title: createCardDto.title,
+    //   });
+    // if (prevCard)
+    //   throw new HttpException('같은 이름을 가진 카드가 존재합니다.', 403);
+
+    // Card 생성
     const newCard = this.cardsRepository.create({
       ...createCardDto,
       catalogId: +catalogId,
       sequence: cardsLength + 1,
     });
     const createdCard = await this.cardsRepository.save(newCard);
-    return createdCard;
+
+    // CardUser 생성
+    const card = await this.dataSource
+      .createQueryBuilder(Card, 'card')
+      .select(['card.cardId', 'catalog.board_id'])
+      .leftJoin('card.catalog', 'catalog', 'card.catalogId = catalog.catalogId')
+      .where('card.cardId = :cardId', { cardId: createdCard.cardId })
+      .getOne();
+    const boardUser = await this.boardUsersRepository.findOne({
+      where: {
+        boardId: card.catalog.board_id,
+        userId,
+      },
+    });
+    if (boardUser) {
+      const newCardUser = await this.cuRepository.save({
+        buId: boardUser.buId,
+        cardId: createdCard.cardId,
+      });
+      return {
+        'new Card': newCard,
+        'new Card User': newCardUser,
+      };
+    }
   }
 
   async findById(query): Promise<Card[] | Card> {
