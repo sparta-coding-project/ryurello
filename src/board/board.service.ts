@@ -42,6 +42,13 @@ export class BoardService {
     return board.boardId;
   }
 
+  async isUser(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+    return user;
+  }
+
   async isUserMemberOfBoard(boardId: number, userId: number) {
     const isExist = await this.boardUserRepository.findOne({
       where: { board: { boardId }, user: { userId } },
@@ -84,7 +91,7 @@ export class BoardService {
   async findOne(boardId: number) {
     return await this.boardRepository.findOne({
       where: { boardId },
-      select: ['title', 'background_color', 'description'],
+      relations: ['catalogs'],
     });
   }
 
