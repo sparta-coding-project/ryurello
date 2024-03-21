@@ -12,6 +12,7 @@ import {
   Delete,
   BadRequestException,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { MailService } from 'src/mail/mail.service';
@@ -118,6 +119,17 @@ export class BoardController {
   ) {
     const to = mailDto.to;
     const board = await this.boardService.findOne(boardId);
+
+    await Promise.all(
+      to.map(async (email) => {
+        const isUser = await this.boardService.isUser(email);
+        if (!isUser) {
+          throw new NotFoundException(
+            `${email} 님은 Ryurello 유저가 아닙니다.`,
+          );
+        }
+      }),
+    );
 
     await Promise.all(
       to.map(async (email) => {
