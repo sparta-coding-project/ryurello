@@ -29,11 +29,7 @@ export class CatalogController {
     @Param('boardId') boardId: number,
     @Body() catalogDto: CatalogDto,
   ) {
-    return this.catalogService.createCatalog(
-      catalogDto.title,
-      catalogDto.sequence,
-      boardId,
-    );
+    return this.catalogService.createCatalog(catalogDto.title, boardId);
   }
 
   @Patch('updateTitle/:catalogId')
