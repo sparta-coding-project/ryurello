@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Catalog } from 'src/entities/catalogs.entity';
 import { Board } from 'src/entities/boards.entity';
+import { Card } from 'src/entities/cards.entity';
 
 import _ from 'lodash';
 
@@ -51,7 +52,10 @@ export class CatalogService {
 
   /* catalog 단일 조회 */
   async getOneCatalog(catalogId: number) {
-    return await this.catalogRepository.findOneBy({ catalogId: catalogId });
+    return await this.catalogRepository.findOne({
+      where: { catalogId: catalogId },
+      relations: ['cards'],
+    });
   }
 
   /* catalog 제목 수정 */
@@ -138,9 +142,4 @@ export class CatalogService {
 
     return isDup;
   }
-
-  /* sequence 정렬하는 함수 */
-  // private async sortSequence(boardId: number) {
-  //   const catalogs = await this.catalogRepository.findBy({ board_id: boardId });
-  // }
 }
