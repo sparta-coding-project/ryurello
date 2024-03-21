@@ -91,7 +91,7 @@ export class BoardService {
   async findOne(boardId: number) {
     return await this.boardRepository.findOne({
       where: { boardId },
-      select: ['title', 'background_color', 'description'],
+      relations: ['catalogs'],
     });
   }
 
