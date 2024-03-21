@@ -19,13 +19,13 @@ export class Catalog {
   /**
    *  @example "catalog 예시 - To Do"
    */
-  @Column({ type: 'varchar', unique: true, nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   title: string;
 
   /**
    * @example 1
    */
-  @Column({ type: 'int', unique: true, nullable: false })
+  @Column({ type: 'int', nullable: false })
   sequence: number;
 
   @ManyToOne(() => Board, (board) => board.catalogs, {
@@ -33,6 +33,9 @@ export class Catalog {
   })
   @JoinColumn({ name: 'board_id', referencedColumnName: 'boardId' })
   board: Board;
+
+  @Column({ type: 'int', nullable: false })
+  board_id: number;
 
   @OneToMany(() => Card, (card) => card.catalog)
   cards: Card[];

@@ -21,22 +21,25 @@ export class Comment {
   content: string;
 
   /**
-   * @example 1
-   */
-  @Column({ type: 'int', unique: true, nullable: false })
-  sequence: string;
-
-  /**
    * @example Clap
    */
   @Column({ type: 'enum', enum: Like })
   like?: Like;
 
+  @Column({ type: 'datetime' })
+  createdAt: Date;
+
   @ManyToOne(() => Card, (card) => card.comments)
   @JoinColumn({ name: 'card_id', referencedColumnName: 'cardId' })
   card: Card;
 
+  @Column({ type: 'int', nullable: false })
+  card_id: number;
+
   @ManyToOne(() => BoardUser, (boardUser) => boardUser.comments)
   @JoinColumn({ name: 'bu_id', referencedColumnName: 'buId' })
   boardUser: BoardUser;
+
+  @Column({ type: 'int', nullable: false })
+  bu_id: number;
 }
