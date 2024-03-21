@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { CardUsersService } from './card-users.service';
 import { CreateCardUserDto } from './dto/create-card-user.dto';
 import { UpdateCardUserDto } from './dto/update-card-user.dto';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Card User')
 @Controller('card-users')
 export class CardUsersController {
   constructor(private readonly cardUsersService: CardUsersService) {}
@@ -12,23 +23,19 @@ export class CardUsersController {
     return this.cardUsersService.create(createCardUserDto);
   }
 
+  @Delete(":cuId")
+  remove(@Param() cuId: number){
+    return this.cardUsersService.remove(+cuId);
+  }
+
+  @ApiQuery({ name: 'catalogId', required: true, description: 'number' })
   @Get()
-  findAll() {
-    return this.cardUsersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cardUsersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCardUserDto: UpdateCardUserDto) {
-    return this.cardUsersService.update(+id, updateCardUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cardUsersService.remove(+id);
+  findUsersByCardId(@Query() query: { cardId: number }) {
+    try {
+      const { cardId } = query;
+      return this.cardUsersService.findUsersByCardId(cardId);
+    } catch (error) {
+      return error
+    }
   }
 }

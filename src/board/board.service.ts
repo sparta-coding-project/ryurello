@@ -18,10 +18,12 @@ import { Role } from 'src/entities/types/boardUserRole.type';
 @Injectable()
 export class BoardService {
   constructor(
-    @InjectRepository(Board) private boardRepository: Repository<Board>,
+    @InjectRepository(Board) 
+    private boardRepository: Repository<Board>,
     @InjectRepository(BoardUser)
     private boardUserRepository: Repository<BoardUser>,
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User) 
+    private userRepository: Repository<User>,
   ) {}
 
   async create(createBoardDto: CreateBoardDto, userId: number) {

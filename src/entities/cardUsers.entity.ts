@@ -11,14 +11,14 @@ export class CardUser {
   @ManyToOne(() => BoardUser, (boardUser) => boardUser.cardUsers)
   @JoinColumn({ name: 'bu_id', referencedColumnName: 'buId' })
   boardUser: BoardUser;
-
-  @Column()
-  @IsNumber()
-  cardId: number;
   
   @Column()
   @IsNumber()
   buId: number;
+
+  @Column()
+  @IsNumber()
+  cardId: number;
 
   @ManyToOne(() => Card, (card) => card.cardUsers)
   @JoinColumn({ name: 'card_id', referencedColumnName: 'cardId' })

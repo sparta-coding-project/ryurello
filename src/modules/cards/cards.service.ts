@@ -29,7 +29,6 @@ export class CardsService {
       catalogId: +catalogId,
       sequence: cardsLength + 1,
     });
-    console.log(newCard);
     const createdCard = await this.cardsRepository.save(newCard);
     return createdCard;
   }
@@ -67,12 +66,13 @@ export class CardsService {
   }) {
     const { catalogId, cardId, sequence } = query;
     const queryRunner = this.dataSource.createQueryRunner();
+    const queryBuilder = this.dataSource.createQueryBuilder();
     let cards = await this.cardsRepository.find({
       where: { catalogId },
       order: { sequence: 'asc' },
     });
     // 변경해야 하는 카드
-    const card = await this.cardsRepository.findOneBy({cardId});
+    const card = await this.cardsRepository.findOneBy({ cardId });
     cards = cards.filter((c) => c.cardId !== +cardId);
     cards.splice(sequence - 1, 0, card);
 
@@ -81,14 +81,14 @@ export class CardsService {
     try {
       for (let idx in cards) {
         const { cardId } = cards[+idx];
-        await this.dataSource
-          .createQueryBuilder()
+        await queryBuilder
           .update(Card)
           .set({
             sequence: +idx + 1,
-            catalogId: +catalogId
+            catalogId: +catalogId,
           })
-          .where('cardId = :cardId', { cardId }).execute();
+          .where('cardId = :cardId', { cardId })
+          .execute();
       }
     } catch (error) {
       throw new HttpException('card sequence 변경 transaction error', 403);

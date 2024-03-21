@@ -13,6 +13,7 @@ export class BoardMemberGuard extends AuthGuard('jwt') implements CanActivate {
     if (!authenticated) {
       return false;
     }
+    
     const request = context.switchToHttp().getRequest();
     const { user } = context.switchToHttp().getRequest();
     const boardId = +request.params.boardId;

@@ -13,18 +13,29 @@ import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { Card } from 'src/entities/cards.entity';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { CardUsersService } from '../card-users/card-users.service';
+import { UserInfo } from 'src/utils/decorators/userInfo';
+import { User } from 'src/entities/users.entity';
 
 @ApiTags("Cards")
 @Controller('cards')
 export class CardsController {
-  constructor(private readonly cardsService: CardsService) {}
+  constructor(
+    private readonly cardsService: CardsService,
+    private readonly cardUsersService: CardUsersService  
+  ) {}
 
   @ApiQuery({name:"catalogId", required:true, description: "number" })
   @Post()
-  async createCard(@Query() query: {catalogId: number}, @Body() createCardDto: CreateCardDto) {
+  async createCard(
+      @Query() query: {catalogId: number}, 
+      @Body() createCardDto: CreateCardDto, 
+      @UserInfo() userInfo:User
+    ) {
     try {
       const { catalogId } = query;
-      return await this.cardsService.createCard(catalogId, createCardDto);
+      const newCard = await this.cardsService.createCard(catalogId, createCardDto);
+      // const newCardUsers = await this.cardUsersService.create({cardId: newCard.cardId, buId: })
     } catch (error) {
       return error;
     }
