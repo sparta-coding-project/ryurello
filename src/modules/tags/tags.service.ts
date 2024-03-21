@@ -3,10 +3,14 @@ import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { Repository } from 'typeorm';
 import { Tag } from '../../entities/tags.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class TagsService {
-  constructor(private readonly tagsRepository: Repository<Tag>) {}
+  constructor(
+    @InjectRepository(Tag)
+    private readonly tagsRepository: Repository<Tag>
+  ) {}
   async create(createTagDto: CreateTagDto) {
     const { cardId, title } = createTagDto;
     const tag = this.tagsRepository.findOneBy({ cardId, title });
