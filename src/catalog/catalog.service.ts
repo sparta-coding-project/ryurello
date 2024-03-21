@@ -49,11 +49,9 @@ export class CatalogService {
 
   /* catalog 단일 조회 */
   async getOneCatalog(catalogId: number) {
-    const result = await this.catalogRepository.findOneBy({
-      catalogId: catalogId,
-    });
-    return { result };
+    return await this.catalogRepository.findOneBy({ catalogId: catalogId });
   }
+
   /* catalog 제목 수정 */
   async updateCatalogTitle(catalogId: number, title: string) {
     const catalog = await this.catalogRepository.findOneBy({
@@ -153,4 +151,10 @@ export class CatalogService {
 
     return isDup;
   }
+
+  /* sequence 정렬하는 함수 */
+  // private async sortSequence(boardId: number){
+  //   const catalogs = await this.catalogRepository.findBy({ board_id: boardId });
+
+  // }
 }
