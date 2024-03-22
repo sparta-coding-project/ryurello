@@ -39,7 +39,8 @@ export class CatalogController {
   /* 해당 보드의 여러 카탈로그들 + 카드들 조회 */
   @Get('get/:boardId')
   async findCatalogs(@Param('boardId') boardId: number) {
-    return await this.catalogService.getCatalogs(boardId);
+    const result = await this.catalogService.getCatalogs(boardId);
+    return { result };
   }
 
   /**
