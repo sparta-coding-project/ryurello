@@ -36,7 +36,6 @@ export class GoogleController {
   ) {
     const accessToken = await this.googleService.googleLogin(req);
     res.cookie('Authorization', `Bearer ${accessToken.access_token}`);
-    res.redirect('http://localhost:3000/api');
     return accessToken;
   }
 }
