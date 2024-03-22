@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
+import { UpdateCommentDto } from './dto/updateComment.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Like } from 'src/entities/types/commentLike.type';
 import { AuthGuard } from '@nestjs/passport';
@@ -62,9 +63,12 @@ export class CommentController {
   @Patch('update/:commentId')
   async updateComment(
     @Param('commentId') commentId: number,
-    @Body('content') content: string,
+    @Body() updateCommentDto: UpdateCommentDto,
   ) {
-    return this.commentService.updateComment(commentId, content);
+    return this.commentService.updateComment(
+      commentId,
+      updateCommentDto.content,
+    );
   }
 
   /**
