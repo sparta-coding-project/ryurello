@@ -84,7 +84,7 @@ export class BoardController {
    */
   @ApiBearerAuth()
   @Get(':boardId')
-  @UseGuards(AuthGuard('jwt'), BoardMemberGuard)
+  @UseGuards(BoardMemberGuard)
   async findOne(@Param('boardId') boardId: number) {
     const data = await this.boardService.findOne(boardId);
 
@@ -110,7 +110,7 @@ export class BoardController {
    * @returns
    */
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'), BoardMemberGuard)
+  @UseGuards(BoardMemberGuard)
   @Post(':boardId/invite')
   async sendMailAndInvite(
     @Param('boardId') boardId: number,
@@ -183,7 +183,7 @@ export class BoardController {
    * @returns
    */
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'), BoardMemberGuard)
+  @UseGuards(BoardMemberGuard)
   @Patch(':boardId')
   update(
     @Param('boardId') boardId: number,
@@ -203,7 +203,7 @@ export class BoardController {
    */
   @Roles(Role.Admin)
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'), BoardMemberGuard)
+  @UseGuards(BoardMemberGuard)
   @Delete(':boardId')
   remove(@Param('boardId') boardId: number) {
     this.boardService.remove(+boardId);
