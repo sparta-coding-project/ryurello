@@ -15,6 +15,7 @@ import Joi from 'joi';
 import { AuthModule } from './auth/auth.module';
 import { TagsModule } from './modules/tags/tags.module';
 import { CardUsersModule } from './modules/card-users/card-users.module';
+import { GoogleModule } from './google/google.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -59,6 +60,7 @@ const typeOrmModuleOptions = {
     CommentModule,
     TagsModule,
     // CardUsersModule,
+    GoogleModule,
   ],
   controllers: [],
   providers: [],

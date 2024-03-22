@@ -1,7 +1,7 @@
 export enum Like {
-  Smile,
-  Read,
-  Thanks,
-  Cry,
-  Clap,
+  Smile = 'Smile',
+  Read = 'Read',
+  Thanks = 'Thanks',
+  Cry = 'Cry',
+  Clap = 'Clap',
 }

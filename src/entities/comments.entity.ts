@@ -23,7 +23,7 @@ export class Comment {
   /**
    * @example Clap
    */
-  @Column({ type: 'enum', enum: Like })
+  @Column({ type: 'enum', enum: Like, nullable: true })
   like?: Like;
 
   @Column({ type: 'datetime' })
