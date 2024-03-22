@@ -6,19 +6,25 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Card } from './cards.entity';
+import { IsHexColor } from 'class-validator';
 
 @Entity({ name: "tags"})
 export class Tag {
   @PrimaryGeneratedColumn()
   tagId: number;
 
-  @ManyToOne(() => Card, (card) => card.tags)
-  @JoinColumn({ name: 'card_id', referencedColumnName: 'cardId' })
-  card: Card;
+  @Column()
+  cardId: number;
 
   @Column()
   title: string;
 
-  @Column()
+  @Column({default: "#a1ffa1"})
   bgColor: string;
+
+  @ManyToOne(() => Card, (card) => card.tags)
+  @JoinColumn({ name: 'card_id', referencedColumnName: 'cardId' })
+  card: Card;
+
+
 }

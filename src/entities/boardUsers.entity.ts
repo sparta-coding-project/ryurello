@@ -22,6 +22,11 @@ export class BoardUser {
   @Column({ type: 'enum', enum: Role, default: Role.User })
   role: Role;
 
+  @Column()
+  boardId: number
+
+  @Column()
+  userId: number;
   @ManyToOne(() => User, (user) => user.boardUsers, {
     onDelete: 'CASCADE',
   })
