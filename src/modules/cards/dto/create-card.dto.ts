@@ -1,18 +1,21 @@
-import { IsDate, IsString } from "class-validator"
+import { Type } from 'class-transformer';
+import { IsDate, IsString } from 'class-validator';
 
 export class CreateCardDto {
   @IsString()
-  title: string
+  title: string;
 
   @IsString()
-  description: string
+  description: string;
 
   @IsString()
-  bgColor: string
+  bgColor: string;
 
   @IsDate()
-  startDate: Date
+  @Type(() => Date)
+  startDate: Date;
 
   @IsDate()
-  dueDate: Date
+  @Type(() => Date)
+  dueDate: Date;
 }
