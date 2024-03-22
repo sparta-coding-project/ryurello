@@ -77,7 +77,7 @@ export class CommentService {
     return { message: '댓글의 내용이 수정되었습니다.' };
   }
 
-  /* 댓글 좋아요 */
+  /* 댓글 이모티콘 */
   async likeComment(commentId: number, like: Like) {
     const comment = await this.commentRepository.findOneBy({ commentId });
 
@@ -88,9 +88,6 @@ export class CommentService {
     if (_.isNil(like)) {
       throw new BadRequestException('이모티콘을 작성하세요.');
     }
-
-    console.log(like);
-    console.log(typeof like);
 
     await this.commentRepository.update({ commentId }, { like });
 
