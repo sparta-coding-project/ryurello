@@ -9,6 +9,8 @@ import {
 } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { CatalogDto } from './dto/catalog.dto';
+import { UpdateCatalogDto } from './dto/updateCatalog.dto';
+import { UpdateSequenceDto } from './dto/updateSequence.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('catalog')
@@ -68,10 +70,13 @@ export class CatalogController {
   async updateCatalogTitle(
     @Param('catalogId')
     catalogId: number,
-    @Body('updateTitle') updateTitle: string,
+    @Body() updateCatalogDto: UpdateCatalogDto,
   ) {
-    await this.catalogService.updateCatalogTitle(catalogId, updateTitle);
-    return { message: `'${updateTitle}'로 title이 변경되었습니다.` };
+    await this.catalogService.updateCatalogTitle(
+      catalogId,
+      updateCatalogDto.title,
+    );
+    return { message: `'${updateCatalogDto.title}'로 title이 변경되었습니다.` };
   }
 
   /**
@@ -84,9 +89,12 @@ export class CatalogController {
   async updateCatalogSequence(
     @Param('catalogId')
     catalogId: number,
-    @Body('updateSequence') updateSequence: number,
+    @Body() updateSequenceDto: UpdateSequenceDto,
   ) {
-    return this.catalogService.updateCatalogSequence(catalogId, updateSequence);
+    return this.catalogService.updateCatalogSequence(
+      catalogId,
+      updateSequenceDto.sequence,
+    );
   }
 
   /**
