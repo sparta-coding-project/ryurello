@@ -14,10 +14,18 @@ import { ApiTags } from '@nestjs/swagger';
 import { Like } from 'src/entities/types/commentLike.type';
 import { AuthGuard } from '@nestjs/passport';
 
+@ApiTags('comment')
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
+  /**
+   * 댓글 생성
+   * @param cardId
+   * @param commentDto
+   * @param req
+   * @returns
+   */
   /* 댓글 작성 */
   @UseGuards(AuthGuard('jwt'))
   @Post('create/:cardId')
@@ -35,12 +43,20 @@ export class CommentController {
     );
   }
 
+  /**
+   * 댓글 확인하기
+   * @param cardId
+   * @returns
+   */
   /* 댓글 확인하기 */
   @Get('get/:cardId')
   async getComments(@Param('cardId') cardId: number) {
     return this.commentService.getComments(cardId);
   }
 
+  /**
+   * 댓글 내용 수정
+   */
   /* 댓글 내용 수정 */
   @Patch('update/:commentId')
   async updateComment(
@@ -50,6 +66,12 @@ export class CommentController {
     return this.commentService.updateComment(commentId, content);
   }
 
+  /**
+   * 댓글 이모티콘 등록 및 수정
+   * @param commentId
+   * @param like
+   * @returns
+   */
   /* 댓글 이모티콘 */
   @Patch('like/:commentId')
   async likeComment(

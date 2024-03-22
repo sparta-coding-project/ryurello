@@ -101,28 +101,19 @@ export class CatalogService {
     /* 목적 catalog의 위치를 먼저 바꾼다 */
 
     catalogs.splice(originSequence - 1, 1);
-    catalogs.splice(sequence - 1, 0, catalog);
 
-    /* 변경된 인덱스를 각 catalog의 sequence에 반영하여 수정*/
+    catalogs.splice(sequence - 1, 0, catalog);
 
     for (let i = 0; i < catalogs.length; i++) {
       const iId = catalogs[i].catalogId;
-
-      const iIndex = catalogs.indexOf(catalogs[i]);
 
       await this.catalogRepository.update(
         {
           catalogId: iId,
         },
-        { sequence: iIndex + 1 },
+        { sequence: i + 1 },
       );
     }
-
-    await this.catalogRepository.find({
-      where: {
-        board_id: catalog.board_id,
-      },
-    });
 
     return { message: '순서 수정이 완료되었습니다.' };
   }
@@ -136,7 +127,33 @@ export class CatalogService {
       throw new NotFoundException('해당 catalog를 찾을 수 없습니다.');
     }
     await this.catalogRepository.delete({ catalogId });
+
+    const boardId = catalog.board_id;
+
+    await this.sortSequence(boardId);
+
     return { message: '해당 catalog가 삭제되었습니다.' };
+  }
+
+  private async sortSequence(boardId: number) {
+    // catalog들 가져오기
+    // catalog들 sequence를 배열 인덱스에 맞게 수정하기
+    const catalogs = await this.catalogRepository.find({
+      where: {
+        board_id: boardId,
+      },
+    });
+
+    for (let i = 0; i < catalogs.length; i++) {
+      const iId = catalogs[i].catalogId;
+
+      await this.catalogRepository.update(
+        {
+          catalogId: iId,
+        },
+        { sequence: i + 1 },
+      );
+    }
   }
 
   /* create할 때 sequence가 중복되는지 확인하는 함수*/
