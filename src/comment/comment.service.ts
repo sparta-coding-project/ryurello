@@ -52,7 +52,10 @@ export class CommentService {
       throw new NotFoundException('card를 찾을 수 없습니다.');
     }
 
-    return await this.commentRepository.find({ where: { card_id: cardId } });
+    return await this.commentRepository.find({
+      where: { card_id: cardId },
+      order: { createdAt: 'DESC' },
+    });
   }
 
   /* 댓글 comment 수정 */
@@ -75,7 +78,7 @@ export class CommentService {
   }
 
   /* 댓글 좋아요 */
-  async likeComment(commentId: number, like: { like: Like }) {
+  async likeComment(commentId: number, like: Like) {
     const comment = await this.commentRepository.findOneBy({ commentId });
 
     if (_.isNil(comment)) {
@@ -87,10 +90,9 @@ export class CommentService {
     }
 
     console.log(like);
+    console.log(typeof like);
 
-    // const emoji = Like.like;
-
-    await this.commentRepository.update({ commentId }, { like: like });
+    await this.commentRepository.update({ commentId }, { like });
 
     return { message: `해당 댓글에 ${like}를 달았습니다.` };
   }
