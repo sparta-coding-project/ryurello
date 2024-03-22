@@ -13,6 +13,7 @@ import { Catalog } from './catalogs.entity';
 import { Tag } from './tags.entity';
 import { CardUser } from './cardUsers.entity';
 import { Comment } from './comments.entity';
+import { IsHash, IsHexColor } from 'class-validator';
 
 @Entity({ name: 'cards' })
 export class Card {
@@ -32,7 +33,7 @@ export class Card {
   @Column()
   description: string;
 
-  @Column()
+  @Column({default: "#fff"})
   bgColor: string;
 
   @Column()
