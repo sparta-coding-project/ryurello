@@ -45,7 +45,7 @@ export class GoogleService extends PassportStrategy(Strategy, 'google') {
 
     const payload = { email: user.email, sub: user.userId };
     const accessToken = this.jwtService.sign(payload);
-    return { access_token: accessToken };
+    return { access_token: accessToken, user };
   }
 
   async validate(
