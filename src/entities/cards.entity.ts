@@ -15,13 +15,13 @@ import { CardUser } from './cardUsers.entity';
 import { Comment } from './comments.entity';
 import { IsHash, IsHexColor } from 'class-validator';
 
-@Entity({ name: "cards"})
+@Entity({ name: 'cards' })
 export class Card {
   @PrimaryGeneratedColumn()
   cardId: number;
 
   @Column()
-  catalogId: number
+  catalogId: number;
 
   @ManyToOne(() => Catalog, (catalog) => catalog.cards)
   @JoinColumn({ name: 'catalog_id', referencedColumnName: 'catalogId' })
