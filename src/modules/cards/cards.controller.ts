@@ -17,6 +17,7 @@ import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { UserInfo } from 'src/utils/decorators/userInfo';
 import { User } from 'src/entities/users.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { BoardMemberGuard } from '../../auth/boardusers.guard';
 
 @ApiTags("Cards")
 @Controller('cards')
@@ -26,10 +27,11 @@ export class CardsController {
   ) {}
 
   @ApiQuery({name:"catalogId", required:true, description: "number" })
-  @UseGuards(AuthGuard("jwt"))
+  @ApiQuery({name:"boardId", required:true, description: "number" })
+  @UseGuards(BoardMemberGuard)
   @Post()
   async createCard(
-      @Query() query: {catalogId: number}, 
+      @Query() query: {catalogId: number, boardId: number}, 
       @Body() createCardDto: CreateCardDto, 
       @UserInfo() userInfo:User
     ) {
@@ -72,6 +74,7 @@ export class CardsController {
   changeCardPosition(@Query() query: { catalogId: number, cardId: number, sequence: number }) {
     try {
       const changedSeq = this.cardsService.changeCardPosition(query);
+      return changedSeq;
     } catch (error) {
       return error
     }
