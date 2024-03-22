@@ -51,7 +51,8 @@ export class CommentController {
   /* 댓글 확인하기 */
   @Get('get/:cardId')
   async getComments(@Param('cardId') cardId: number) {
-    return this.commentService.getComments(cardId);
+    const result = this.commentService.getComments(cardId);
+    return { result };
   }
 
   /**

@@ -8,19 +8,26 @@ import {
   Delete,
   UseGuards,
   Res,
-  Req,
-  UnauthorizedException,
   UploadedFile,
   UseInterceptors,
+  Query,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SignUpDto } from './dto/signUp.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { UserGuard } from 'src/auth/users.guard';
 
 @ApiTags('user')
 @Controller('user')
@@ -33,7 +40,26 @@ export class UserController {
    */
   @Post('register')
   async register(@Body() signUpDto: SignUpDto) {
-    return await this.userService.register(signUpDto);
+    const data = await this.userService.register(signUpDto);
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '회원 가입이 완료되었습니다.',
+      data,
+    };
+  }
+
+  @ApiExcludeEndpoint()
+  @Get('validation/:id')
+  async validateUserByEmail(
+    @Param('id') id: number,
+    @Query('email') email: string,
+  ) {
+    const data = this.userService.validateUserByEmail(id, email);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '메일 인증이 완료되었습니다.',
+      data,
+    };
   }
   /**
    * 로그인
@@ -50,37 +76,53 @@ export class UserController {
       loginDto.password,
     );
     res.cookie('Authorization', `Bearer ${accessToken.access_token}`);
-    return accessToken;
+    return {
+      statusCode: HttpStatus.OK,
+      message: '로그인 되었습니다.',
+      accessToken,
+    };
   }
   /**
    * 프로필 조회
-   * @param id
+   * @param userId
    * @returns
    */
-  @Get(':id')
-  @UseGuards(AuthGuard('jwt'))
-  async findOne(@Param('id') id: string) {
-    const user = await this.userService.findOne(+id);
-    return { user };
+  @Get(':userId')
+  @UseGuards(AuthGuard('jwt'), UserGuard)
+  async findOne(@Param('userId') userId: string) {
+    const user = await this.userService.findOne(+userId);
+    return {
+      statusCode: HttpStatus.OK,
+      user,
+    };
   }
   /**
-   * 유저정보 수정
-   * @param id
+   * 유저 정보 수정
+   * @param userId
    * @param updateUserDto
    * @returns
    */
-  @Patch(':id')
-  @UseGuards(AuthGuard('jwt'))
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @ApiOperation({ summary: '유저 정보 수정' })
+  @Patch(':userId')
+  @UseGuards(AuthGuard('jwt'), UserGuard)
+  update(
+    @Param('userId') userId: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const data = this.userService.update(+userId, updateUserDto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '성공적으로 수정되었습니다.',
+      data,
+    };
   }
   /**
    * 프로필 이미지 업로드
-   * @param id
+   * @param userId
    * @param file
    * @returns
    */
-  @Post('profileImage/:id')
+  @Post('profileImage/:userId')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Image file',
@@ -95,21 +137,21 @@ export class UserController {
       },
     },
   })
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), UserGuard)
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
-    @Param('id') id: number,
+    @Param('userId') userId: number,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    return await this.userService.uploadImage(image, id);
+    return await this.userService.uploadImage(image, userId);
   }
   /**
    * 프로필 이미지 업데이트
-   * @param id
+   * @param userId
    * @param file
    * @returns
    */
-  @Patch('profileImage/:id')
+  @Patch('profileImage/:userId')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Image file',
@@ -124,45 +166,45 @@ export class UserController {
       },
     },
   })
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), UserGuard)
   @UseInterceptors(FileInterceptor('file'))
   async updateImage(
-    @Param('id') id: number,
+    @Param('userId') userId: number,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    await this.userService.deleteImage(id);
-    await this.userService.uploadImage(image, id);
-    return { message: '프로필 이미지가 수정되었습니다.' };
+    await this.userService.deleteImage(userId);
+    await this.userService.uploadImage(image, userId);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '프로필 이미지가 수정되었습니다.',
+    };
   }
   /**
    * 프로필 이미지 삭제
-   * @param id
+   * @param userId
    * @returns
    */
-  @UseGuards(AuthGuard('jwt'))
-  @Delete('profileImage/:id')
-  async deleteImage(@Param('id') id: number) {
-    return await this.userService.deleteImage(id);
+  @UseGuards(AuthGuard('jwt'), UserGuard)
+  @Delete('profileImage/:userId')
+  async deleteImage(@Param('userId') userId: number) {
+    return await this.userService.deleteImage(userId);
   }
   /**
    * 유저 삭제
-   * @param id
+   * @param userId
    * @returns
    */
-  @Delete(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @Delete(':userId')
+  @UseGuards(AuthGuard('jwt'), UserGuard)
   async remove(
-    @Param('id') id: string,
-    @Req() req: any,
+    @Param('userId') userId: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const userId = req.user.userId;
-
-    if (+id !== userId) {
-      throw new UnauthorizedException('해당 작업을 수행할 권한이 없습니다.');
-    }
-    const deleteUser = await this.userService.delete(+id);
+    const deleteUser = await this.userService.delete(+userId);
     res.clearCookie('Authorization');
-    return deleteUser;
+    return {
+      statusCode: HttpStatus.OK,
+      message: deleteUser.message,
+    };
   }
 }

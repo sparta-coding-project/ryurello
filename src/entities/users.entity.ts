@@ -14,6 +14,7 @@ import {
   IsString,
   IsStrongPassword,
 } from 'class-validator';
+import { EmailValid } from './types/userValid.type';
 
 @Index('email', ['email'], { unique: true })
 @Entity({
@@ -22,19 +23,12 @@ import {
 export class User {
   @PrimaryGeneratedColumn()
   userId: number;
-  /**
-   * 이메일
-   * @example "sparta@sparta.com"
-   */
+
   @IsNotEmpty({ message: '이메일을 입력해 주세요.' })
   @IsEmail()
   @Column({ type: 'varchar', unique: true, nullable: false })
   email: string;
 
-  /**
-   * 비밀번호
-   * @example "strinG!2"
-   */
   @IsStrongPassword(
     {},
     {
@@ -43,13 +37,9 @@ export class User {
     },
   )
   @IsNotEmpty({ message: '비밀번호를 입력해주세요.' })
-  @Column({ type: 'varchar', select: false, nullable: false })
+  @Column({ type: 'varchar', select: false, nullable: true })
   password: string;
 
-  /**
-   * 닉네임
-   * @example "티모시 샬라메"
-   */
   @IsString()
   @IsNotEmpty({ message: '닉네임을 입력해 주세요.' })
   @Column({ type: 'varchar', unique: true, nullable: false })
@@ -60,6 +50,13 @@ export class User {
 
   @Column({ type: 'varchar', nullable: true })
   profileImage: string;
+
+  @Column({
+    type: 'enum',
+    enum: EmailValid,
+    default: EmailValid.notPermitted,
+  })
+  emailValid: EmailValid;
 
   @CreateDateColumn()
   createdAt: Date;
