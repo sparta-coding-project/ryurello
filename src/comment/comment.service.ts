@@ -23,7 +23,7 @@ export class CommentService {
   /* comment 생성 */
   async createComment(cardId: number, content: string, bu_id: number) {
     const card = await this.cardRepository.findOneBy({ cardId });
-    const boardUser = await this.boardRepository.findOneBy({ buId: bu_id });
+    const boardUser = await this.boardRepository.findOneBy({ userId: bu_id });
 
     if (_.isNil(card)) {
       throw new NotFoundException('card를 찾을 수 없습니다.');
