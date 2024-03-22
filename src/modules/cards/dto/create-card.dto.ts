@@ -1,4 +1,4 @@
-import { IsDate, IsString } from "class-validator"
+import { IsDate, IsHexColor, IsString } from "class-validator"
 
 export class CreateCardDto {
   @IsString()
@@ -7,7 +7,7 @@ export class CreateCardDto {
   @IsString()
   description: string
 
-  @IsString()
+  @IsHexColor()
   bgColor: string
 
   @IsDate()
