@@ -67,7 +67,7 @@ export class BoardService {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
 
-    const isExist = this.isUserMemberOfBoard(boardId, user.userId);
+    const isExist = await this.isUserMemberOfBoard(boardId, user.userId);
 
     if (isExist) {
       throw new ConflictException('이미 초대된 사용자입니다.');
