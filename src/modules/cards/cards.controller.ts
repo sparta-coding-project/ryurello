@@ -37,7 +37,7 @@ export class CardsController {
       const { catalogId } = query;
       const { userId } = userInfo;
       const newCard = await this.cardsService.createCard(userId, catalogId, createCardDto);
-      return newCard
+      return newCard;
     } catch (error) {
       return error;
     }

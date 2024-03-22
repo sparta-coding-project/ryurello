@@ -19,7 +19,6 @@ export class Tag {
   @Column()
   title: string;
 
-  @IsHexColor()
   @Column({default: "#a1ffa1"})
   bgColor: string;
 

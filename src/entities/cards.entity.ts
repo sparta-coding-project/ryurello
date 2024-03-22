@@ -33,7 +33,6 @@ export class Card {
   @Column()
   description: string;
 
-  @IsHexColor()
   @Column({default: "#fff"})
   bgColor: string;
 

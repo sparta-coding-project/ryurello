@@ -33,11 +33,11 @@ export class CardsService {
       .getCount();
 
     // title이 같은 Card가 있는지 확인
-    // const prevCard = await this.cardsRepository.findOneBy({
-    //     title: createCardDto.title,
-    //   });
-    // if (prevCard)
-    //   throw new HttpException('같은 이름을 가진 카드가 존재합니다.', 403);
+    const prevCard = await this.cardsRepository.findOneBy({
+        title: createCardDto.title,
+      });
+    if (prevCard)
+      throw new HttpException('같은 이름을 가진 카드가 존재합니다.', 403);
 
     // Card 생성
     const newCard = this.cardsRepository.create({
