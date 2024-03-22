@@ -2,7 +2,12 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GoogleService } from './google.service';
 import { Response } from 'express';
-import { ApiExcludeEndpoint, ApiProperty, ApiTags } from '@nestjs/swagger';
+import {
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('social-login')
 @Controller('google')
@@ -15,6 +20,9 @@ export class GoogleController {
    * 구글 로그인
    * @param req
    */
+  @ApiOperation({
+    description: '[구글 로그인 링크](http://localhost:3000/google)',
+  })
   @Get()
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() req) {}

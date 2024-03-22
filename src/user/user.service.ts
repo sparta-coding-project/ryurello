@@ -43,7 +43,11 @@ export class UserService {
     });
     await this.sendMail(newUser.userId, newUser.email);
 
-    return newUser;
+    const createdUser = await this.userRepository.findOneBy({
+      email: signUpDto.email,
+    });
+
+    return createdUser;
   }
 
   async login(email: string, password: string) {
@@ -148,8 +152,8 @@ export class UserService {
     return { imageUrl };
   }
 
-  async deleteImage(id) {
-    const user = await this.userRepository.findOneBy({ userId: id });
+  async deleteImage(userId) {
+    const user = await this.userRepository.findOneBy({ userId });
     if (!user) {
       throw new NotFoundException('해당 사용자가 존재하지 않습니다.');
     }
