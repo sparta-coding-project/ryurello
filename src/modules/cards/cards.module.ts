@@ -16,5 +16,4 @@ import { BoardModule } from '../../board/board.module';
   controllers: [CardsController],
   providers: [CardsService],
 })
-
 export class CardsModule {}

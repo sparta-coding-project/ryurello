@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from './user.service';
-import { User } from 'src/entities/users.entity';
+import { User } from '../../src/entities/users.entity';
 import { Repository } from 'typeorm';
-import { SignUpDto } from './dto/signUp.dto';
 
 describe('UserService', () => {
   let service: UserService;
-  let userRepository: Repository<User>;
+  let userRepositoryMock: Partial<Record<keyof Repository<User>, jest.Mock>>;
+  let jwtServiceMock: Partial<JwtService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,7 +23,6 @@ describe('UserService', () => {
     }).compile();
 
     service = module.get<UserService>(UserService);
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   it('should be defined', () => {
@@ -44,8 +43,10 @@ describe('UserService', () => {
 
   describe('register', () => {
     it('should register a new user', async () => {
-      jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(null);
-      jest.spyOn(userRepository, 'save').mockResolvedValueOnce(newUser as User);
+      jest.spyOn(userRepositoryMock, 'findOne').mockResolvedValueOnce(null);
+      jest
+        .spyOn(userRepositoryMock, 'save')
+        .mockResolvedValueOnce(newUser as User);
 
       const result = await service.register(SignUser);
 
@@ -59,7 +60,7 @@ describe('UserService', () => {
         nickName: 'testUser',
       };
       jest
-        .spyOn(userRepository, 'findOne')
+        .spyOn(userRepositoryMock, 'findOne')
         .mockResolvedValueOnce(newUser as User);
 
       await expect(service.register(SignUser)).rejects.toThrowError(Error);

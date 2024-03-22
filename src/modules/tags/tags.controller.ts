@@ -21,28 +21,28 @@ export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
   @Post()
-  @ApiQuery({name: "boardId", required:true, description: "number"})
+  @ApiQuery({ name: 'boardId', required: true, description: 'number' })
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagsService.create(createTagDto);
   }
 
-
   @Get('inquire/:cardId')
-  @ApiQuery({name: "boardId", required:true, description: "number"})
-  @ApiParam({name: "cardId", required:true,})
+  @ApiQuery({ name: 'boardId', required: true, description: 'number' })
+  @ApiParam({ name: 'cardId', required: true })
   findAllByCardId(@Param('cardId') cardId: string) {
-    return this.tagsService.findAllByCardId(+cardId);
+    const result = this.tagsService.findAllByCardId(+cardId);
+    return { result };
   }
 
   @Patch(':tagId')
-  @ApiQuery({name: "boardId", required:true, description: "number"})
-  @ApiParam({name: "tagId", required:true, description: "number"})
+  @ApiQuery({ name: 'boardId', required: true, description: 'number' })
+  @ApiParam({ name: 'tagId', required: true, description: 'number' })
   update(@Param('tagId') tagId: string, @Body() updateTagDto: UpdateTagDto) {
     return this.tagsService.update(+tagId, updateTagDto);
   }
 
   @Delete(':tagId')
-  @ApiQuery({name: "boardId", required:true, description: "number"})
+  @ApiQuery({ name: 'boardId', required: true, description: 'number' })
   remove(@Param('tagId') id: string) {
     return this.tagsService.remove(+id);
   }

@@ -52,7 +52,7 @@ export class CommentController {
   @Get('get/:cardId')
   async getComments(@Param('cardId') cardId: number) {
     const result = this.commentService.getComments(cardId);
-    return { result };
+    return result;
   }
 
   /**
