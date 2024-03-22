@@ -21,7 +21,8 @@ export class CatalogController {
     @Param('catalogId')
     catalogId: number,
   ) {
-    return await this.catalogService.getOneCatalog(catalogId);
+    const result = await this.catalogService.getOneCatalog(catalogId);
+    return { result };
   }
 
   @Post('create/:boardId')

@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
+import { GoogleController } from './google.controller';
+import { GoogleService } from './google.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/users.entity';
-import { AwsModule } from 'src/utils/aws/aws.module';
-import { MailService } from 'src/mail/mail.service';
+import { Axios } from 'axios';
 
 @Module({
   imports: [
@@ -17,10 +16,8 @@ import { MailService } from 'src/mail/mail.service';
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([User]),
-    AwsModule,
   ],
-  controllers: [UserController],
-  providers: [UserService, MailService],
-  exports: [UserService],
+  controllers: [GoogleController],
+  providers: [GoogleService, Axios],
 })
-export class UserModule {}
+export class GoogleModule {}
