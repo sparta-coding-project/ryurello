@@ -34,6 +34,7 @@ export class CardsService {
 
     // title이 같은 Card가 있는지 확인
     const prevCard = await this.cardsRepository.findOneBy({
+      catalogId,
       title: createCardDto.title,
     });
     if (prevCard)
