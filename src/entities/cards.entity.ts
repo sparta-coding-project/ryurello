@@ -13,7 +13,6 @@ import { Catalog } from './catalogs.entity';
 import { Tag } from './tags.entity';
 import { CardUser } from './cardUsers.entity';
 import { Comment } from './comments.entity';
-import { IsHash, IsHexColor } from 'class-validator';
 
 @Entity({ name: 'cards' })
 export class Card {
@@ -33,7 +32,7 @@ export class Card {
   @Column()
   description: string;
 
-  @Column({default: "#fff"})
+  @Column({ default: '#fff' })
   bgColor: string;
 
   @Column()
@@ -54,9 +53,9 @@ export class Card {
   @OneToMany(() => Tag, (tag) => tag.card)
   tags: Tag[];
 
-  @OneToMany(() => CardUser, (cardUser) => cardUser.card)
+  @OneToMany(() => CardUser, (cardUser) => cardUser.card, { cascade: true })
   cardUsers: CardUser[];
 
-  @OneToMany(() => Comment, (comment) => comment.card)
+  @OneToMany(() => Comment, (comment) => comment.card, { cascade: true })
   comments: Comment[];
 }

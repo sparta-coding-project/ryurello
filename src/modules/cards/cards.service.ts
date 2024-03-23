@@ -34,8 +34,8 @@ export class CardsService {
 
     // title이 같은 Card가 있는지 확인
     const prevCard = await this.cardsRepository.findOneBy({
-        title: createCardDto.title,
-      });
+      title: createCardDto.title,
+    });
     if (prevCard)
       throw new HttpException('같은 이름을 가진 카드가 존재합니다.', 403);
 
@@ -72,30 +72,28 @@ export class CardsService {
     }
   }
 
-  async findById(query): Promise<Card[] | Card> {
-    const { catalogId, cardId } = query;
-    if (catalogId) {
-      return await this.cardsRepository.find({
-        where: { catalogId: +catalogId },
-      });
-    } else {
-      return await this.cardsRepository.findOne({
-        where: { cardId: +cardId },
-      });
-    }
+  async findById(cardId: number): Promise<Card> {
+    const card = await this.cardsRepository.findOne({
+      where: { cardId },
+    });
+    return card;
+  }
+
+  async findByCatalogId(catalogId: number): Promise<Card[]> {
+    return await this.cardsRepository.findBy({ catalogId });
   }
 
   async update(cardId: number, updateCardDto: UpdateCardDto) {
-    const prevCard = await this.cardsRepository.findOneBy({ cardId });
-    if (prevCard.sequence === updateCardDto.sequence) {
-      return await this.cardsRepository.update(
-        {
-          cardId,
-        },
-        updateCardDto,
-      );
-    } else {
-    }
+    // const prevCard = await this.cardsRepository.findOneBy({ cardId });
+    // if (prevCard.sequence === updateCardDto.sequence) {
+    return await this.cardsRepository.update(
+      {
+        cardId,
+      },
+      updateCardDto,
+    );
+    // } else {
+    // }
   }
 
   async changeCardPosition(query: {
