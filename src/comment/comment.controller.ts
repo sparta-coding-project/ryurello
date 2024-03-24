@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
+import { UpdateLikeDto } from './dto/updateLike.dto';
+import { UpdateContentDto } from './dto/updateContent.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Like } from 'src/entities/types/commentLike.type';
 import { AuthGuard } from '@nestjs/passport';
@@ -52,33 +54,39 @@ export class CommentController {
   @Get('get/:cardId')
   async getComments(@Param('cardId') cardId: number) {
     const result = this.commentService.getComments(cardId);
-    return { result };
+    return result;
   }
 
   /**
    * 댓글 내용 수정
+   * @param commentId
+   * @param updateContentDto
+   * @returns
    */
   /* 댓글 내용 수정 */
   @Patch('update/:commentId')
   async updateComment(
     @Param('commentId') commentId: number,
-    @Body('content') content: string,
+    @Body() updateContentDto: UpdateContentDto,
   ) {
-    return this.commentService.updateComment(commentId, content);
+    return this.commentService.updateComment(
+      commentId,
+      updateContentDto.content,
+    );
   }
 
   /**
    * 댓글 이모티콘 등록 및 수정
    * @param commentId
-   * @param like
+   * @param updateLikeDto
    * @returns
    */
   /* 댓글 이모티콘 */
   @Patch('like/:commentId')
   async likeComment(
     @Param('commentId') commentId: number,
-    @Body('like') like: Like,
+    @Body() updateLikeDto: UpdateLikeDto,
   ) {
-    return this.commentService.likeComment(commentId, like);
+    return this.commentService.likeComment(commentId, updateLikeDto.like);
   }
 }

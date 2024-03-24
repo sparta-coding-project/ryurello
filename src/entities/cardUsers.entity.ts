@@ -21,7 +21,7 @@ export class CardUser {
   boardUser: BoardUser;
   
 
-  @ManyToOne(() => Card, (card) => card.cardUsers)
+  @ManyToOne(() => Card, (card) => card.cardUsers, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'card_id', referencedColumnName: 'cardId' })
   card: Card;
 }
