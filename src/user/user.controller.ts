@@ -105,11 +105,11 @@ export class UserController {
   @ApiOperation({ summary: '유저 정보 수정' })
   @Patch(':userId')
   @UseGuards(AuthGuard('jwt'), UserGuard)
-  update(
+  async update(
     @Param('userId') userId: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const data = this.userService.update(+userId, updateUserDto);
+    const data = await this.userService.update(+userId, updateUserDto);
     return {
       statusCode: HttpStatus.OK,
       message: '성공적으로 수정되었습니다.',

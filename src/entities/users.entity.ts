@@ -42,7 +42,7 @@ export class User {
 
   @IsString()
   @IsNotEmpty({ message: '닉네임을 입력해 주세요.' })
-  @Column({ type: 'varchar', unique: true, nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   nickName: string;
 
   @OneToMany(() => BoardUser, (boardUser) => boardUser.user)
