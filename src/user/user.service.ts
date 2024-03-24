@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  HttpException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -112,6 +113,12 @@ export class UserService {
       throw new UnauthorizedException('비밀번호를 확인해 주세요');
     }
     const hashedPassword = await hash(updatePassword, 10);
+    const ExistingNickname = await this.userRepository.findOne({
+      where: { nickName: updateNickName },
+    });
+    if (ExistingNickname) {
+      throw new ConflictException('이미 같은 닉네임이 존재합니다.');
+    }
     if (!updateNickName) {
       updateNickName = user.nickName;
     }

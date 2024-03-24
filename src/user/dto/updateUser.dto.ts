@@ -4,7 +4,7 @@ import { User } from 'src/entities/users.entity';
 import { IsStrongPasswordNullable } from '../validate/password.validate';
 import { SignUpDto } from './signUp.dto';
 
-export class UpdateUserDto extends PickType(SignUpDto, ['email']) {
+export class UpdateUserDto extends PickType(SignUpDto, ['nickName']) {
   /**
    * 비밀번호
    * @example "strinG!23"
